@@ -458,6 +458,50 @@ body.theme-black{
   color:var(--text2);cursor:pointer;transition:all .2s;
 }
 .theme-btn:hover{background:rgba(255,255,255,.8);color:var(--text);transform:translateY(-1px)}
+
+/* ── ZEN / CINEMA ── */
+body.cinema-mode .shell{
+  visibility:hidden!important;opacity:0!important;pointer-events:none!important;
+  position:fixed!important;left:0;top:0;width:min(100%,520px);max-width:500px;margin:0 auto;right:0;
+  transform:translateY(-120%)scale(.98);transition:opacity .35s ease,transform .38s cubic-bezier(.4,0,.2,1);
+}
+body.cinema-mode #toast{bottom:88px}
+
+.cinema-dock{
+  display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:80;
+  padding:5px 6px;background:var(--surface);backdrop-filter:saturate(140%)blur(14px);-webkit-backdrop-filter:saturate(140%)blur(14px);
+  border-radius:999px;border:1px solid var(--border2);box-shadow:0 14px 44px var(--shadow);
+  gap:8px;align-items:center;
+}
+body.theme-dark .cinema-dock,body.theme-black .cinema-dock{background:rgba(24,12,42,.92)}
+body.cinema-mode .cinema-dock{display:flex}
+.cinema-btn{
+  border:none;background:var(--surface2);color:var(--text);font-size:.72rem;line-height:1;
+  padding:10px 14px;border-radius:999px;cursor:pointer;font-family:'Nunito',sans-serif;font-weight:700;
+  letter-spacing:.04em;border:1.5px solid var(--border2);transition:background .15s,transform .12s;
+}
+.cinema-btn:hover{background:var(--surface);transform:translateY(-1px)}
+.cinema-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.cinema-btn-primary{
+  background:linear-gradient(135deg,var(--purple),#a855f7);border-color:transparent;color:#fff;
+}
+.cinema-btn-primary:hover{box-shadow:0 4px 18px rgba(139,92,246,.35)}
+.cinema-mini-dim{display:flex;align-items:center;gap:6px;padding:0 4px;color:var(--text3);font-size:.48rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.cinema-mini-dim input[type=range]{width:76px;height:4px;-webkit-appearance:none;appearance:none;background:rgba(139,92,246,.2);border-radius:4px;cursor:pointer}
+.cinema-mini-dim input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:12px;border-radius:50%;background:var(--purple);box-shadow:0 0 8px rgba(139,92,246,.35)}
+.cinema-mini-dim input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:var(--purple);border:none}
+
+.vid-transport{display:flex;margin-top:10px}
+.vid-transport .btn-transport{
+  flex:1;font-family:'Nunito',sans-serif;font-size:.58rem;font-weight:700;letter-spacing:.05em;
+  padding:9px 14px;border-radius:12px;border:1.5px solid var(--border2);background:var(--surface2);color:var(--text2);cursor:pointer;transition:all .18s;
+}
+.vid-transport .btn-transport:hover{border-color:var(--purple-light);color:var(--text)}
+.vid-transport .btn-transport.is-paused{border-color:rgba(251,146,60,.55);color:#ea580c}
+
+@media (prefers-reduced-motion:reduce){
+  .cat-wrap,.cat-tail,.cat-ear-l,.cat-ear-r,.cat-eye,.cat-eye2,.cat-paw,.pill-dot{animation:none!important}
+}
 </style>
 </head>
 <body>
@@ -472,6 +516,7 @@ body.theme-black{
     <div class="logo">🐱 Focus Kitty</div>
     <div style="display:flex;align-items:center;gap:8px">
       <button class="theme-btn" id="theme-btn" onclick="cycleTheme()">🌙 Dark</button>
+      <button class="theme-btn" type="button" id="zen-btn" onclick="toggleCinemaMode()" title="Zen — background video only (Esc to exit)">Zen</button>
       <div class="mode-pill" id="mode-pill">
         <div class="pill-dot"></div>
         <span id="mode-label">Focus</span>
@@ -604,6 +649,9 @@ body.theme-black{
           oninput="updateBgVol(this.value)"/>
         <span class="rv" id="bgvol-v">0%</span>
       </div>
+      <div class="vid-transport">
+        <button type="button" class="btn-transport" id="btn-bg-play" onclick="toggleBgPlayback()" disabled>▶ Play video</button>
+      </div>
     </div>
   </div>
 
@@ -678,12 +726,17 @@ body.theme-black{
     </div>
   </div>
 
-  <div class="footer">Space = play/pause &nbsp;·&nbsp; R = reset &nbsp;·&nbsp; S = skip</div>
+  <div class="footer">Space = timer · P = BG video · Zen = video only · Esc = exit Zen · R / S = reset / skip</div>
 </div>
 
 <div id="yt-af" style="position:fixed;bottom:-9px;width:1px;height:1px;overflow:hidden"></div>
 <div id="yt-ab" style="position:fixed;bottom:-9px;width:1px;height:1px;overflow:hidden"></div>
-<button class="floating-video-toggle" id="floating-video-toggle" onclick="toggleCinemaMode()">Show UI</button><div class="toast" id="toast"></div>
+<div class="cinema-dock" id="cinema-dock" role="toolbar" aria-label="Zen mode controls">
+  <button type="button" class="cinema-btn" id="bg-play-toggle" onclick="toggleBgPlayback()" disabled title="Play / pause video (P)">▶</button>
+  <label class="cinema-mini-dim"><span>Dim</span><input type="range" id="cinema-dim-r" min="0" max="95" value="72" aria-label="Overlay dim" oninput="syncDimFromCinema(this.value)"/></label>
+  <button type="button" class="cinema-btn cinema-btn-primary" id="exit-zen-btn" onclick="toggleCinemaMode()">Show UI</button>
+</div>
+<div class="toast" id="toast"></div>
 
 <script src="https://www.youtube.com/iframe_api"></script>
 <script>
@@ -698,7 +751,7 @@ let ytReady=false,bgId='',focusId='',breakId='';
 let pendingBgPlay=false,pendingFP=false,pendingBP=false;
 let isSeeking=false,bgIsLive=false,bgVolume=0;
 let tlInterval=null;
-        let cinemaMode=false;
+let cinemaMode=false,bgUserPaused=false;
 
 const $=id=>document.getElementById(id);
 
@@ -794,19 +847,36 @@ function buildBgPlayer(){
       $('live-badge').classList[bgIsLive?'add':'remove']('show');
       startTl();
       showToast(bgIsLive?'Live stream loaded 📡':'Background video loaded 🎬');
+      syncBgPlayButton();
     },
-    onStateChange:e=>{if(e.data===0)try{bgPlayer.playVideo();}catch(x){}},
+    onStateChange:e=>{
+      if(e.data===YT.PlayerState.PAUSED)bgUserPaused=true;
+      if(e.data===YT.PlayerState.PLAYING)bgUserPaused=false;
+      if(e.data===0&&!bgUserPaused)try{bgPlayer.playVideo();}catch(x){}
+      syncBgPlayButton();
+    },
     onError:e=>{
       const c={2:'Invalid URL',5:'HTML5 error',100:'Video not found',101:'Embedding not allowed',150:'Embedding not allowed'};
       showToast('Error: '+(c[e.data]||'Error '+e.data));clearBg();
     }
   }});
 }
-function clearBg(){destroyBg();$('bg-wrap').innerHTML='';$('video-tl').style.display='none';stopTl();bgId='';}
-function destroyBg(){stopTl();if(bgPlayer){try{bgPlayer.destroy();}catch(e){}bgPlayer=null;}}
+function clearBg(){destroyBg();$('bg-wrap').innerHTML='';$('video-tl').style.display='none';stopTl();bgId='';syncBgPlayButton();}
+function destroyBg(){stopTl();if(bgPlayer){try{bgPlayer.destroy();}catch(e){}bgPlayer=null;}syncBgPlayButton();}
 
-function startTl(){stopTl();tlInterval=setInterval(updateTl,500);}
+function tlIntervalMs(){
+  if(document.hidden)return 2800;
+  if(cinemaMode)return 2000;
+  return 750;
+}
+function startTl(){
+  stopTl();
+  if(!bgPlayer)return;
+  updateTl();
+  tlInterval=setInterval(updateTl,tlIntervalMs());
+}
 function stopTl(){if(tlInterval){clearInterval(tlInterval);tlInterval=null;}}
+function refreshTlInterval(){if(bgPlayer)startTl();}
 function fmtHms(s){
   if(isNaN(s)||s<0)s=0;s=Math.floor(s);
   const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sec=s%60;
@@ -832,6 +902,54 @@ function updateDim(v){
   const c=style.getPropertyValue('--dim-color').trim()||'232,213,247';
   $('bg-dim').style.background=`rgba(${c},${(parseInt(v)/100).toFixed(2)})`;
   $('dim-v').textContent=v+'%';
+  const cr=$('cinema-dim-r');if(cr&&String(cr.value)!==String(v))cr.value=v;
+}
+
+function syncDimFromCinema(val){
+  const dr=$('dim-r');if(dr)dr.value=val;
+  updateDim(val);
+}
+
+function syncBgPlayButton(){
+  const dock=$('bg-play-toggle'),panel=$('btn-bg-play');
+  const apply=(btn,playing,hasPlayer)=>{
+    if(!btn)return;
+    if(!hasPlayer){btn.disabled=true;if(btn===dock)btn.textContent='▶';if(btn===panel)btn.textContent='▶ Play video';btn.classList.add('is-paused');return;}
+    btn.disabled=false;
+    const on=playing;
+    if(on){if(btn===dock)btn.textContent='⏸';if(btn===panel)btn.textContent='⏸ Pause video';btn.classList.remove('is-paused');}
+    else{if(btn===dock)btn.textContent='▶';if(btn===panel)btn.textContent='▶ Play video';btn.classList.add('is-paused');}
+  };
+  let playing=false,has=false;
+  try{
+    if(bgPlayer&&typeof bgPlayer.getPlayerState==='function'){
+      has=true;
+      const st=bgPlayer.getPlayerState();
+      playing=(st===YT.PlayerState.PLAYING||st===YT.PlayerState.BUFFERING);
+    }
+  }catch(e){}
+  apply(dock,playing,has);apply(panel,playing,has);
+}
+
+function toggleBgPlayback(){
+  if(!bgPlayer||typeof bgPlayer.pauseVideo!=='function'){showToast('Load a background video first');return;}
+  try{
+    const st=bgPlayer.getPlayerState();
+    if(st===YT.PlayerState.PLAYING||st===YT.PlayerState.BUFFERING){bgPlayer.pauseVideo();bgUserPaused=true;}
+    else{bgUserPaused=false;bgPlayer.playVideo();}
+  }catch(e){showToast('Could not control playback');}
+  setTimeout(syncBgPlayButton,100);
+}
+
+function toggleCinemaMode(){
+  cinemaMode=!cinemaMode;
+  document.body.classList.toggle('cinema-mode',cinemaMode);
+  const zen=$('zen-btn');
+  if(zen)zen.textContent=cinemaMode?'Exit':'Zen';
+  const cr=$('cinema-dim-r'),dr=$('dim-r');
+  if(cr&&dr)cr.value=dr.value;
+  syncBgPlayButton();refreshTlInterval();
+  showToast(cinemaMode?'Zen — only the background video is visible':'Back to Focus Kitty UI');
 }
 
 // ── AUTO START ──
@@ -1041,6 +1159,9 @@ function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('sh
 // ── KEYS ──
 document.addEventListener('keydown',e=>{
   if(['INPUT','SELECT','TEXTAREA'].includes(e.target.tagName))return;
+  if(e.code==='Escape'&&cinemaMode){e.preventDefault();toggleCinemaMode();return;}
+  if(e.code==='KeyP'){e.preventDefault();toggleBgPlayback();return;}
+  if(cinemaMode&&e.code==='Space'){e.preventDefault();toggleBgPlayback();return;}
   if(e.code==='Space'){e.preventDefault();toggleTimer();}
   if(e.code==='KeyR')resetTimer();
   if(e.code==='KeyS')skipPhase();
@@ -1048,6 +1169,7 @@ document.addEventListener('keydown',e=>{
 
 // When tab becomes visible again, resync remaining from real clock
 document.addEventListener('visibilitychange',()=>{
+  refreshTlInterval();
   if(!document.hidden && isRunning && timerStartedAt!==null){
     const elapsed=Math.floor((Date.now()-timerStartedAt)/1000);
     remaining=Math.max(0,remainingAtStart-elapsed);
