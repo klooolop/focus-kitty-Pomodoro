@@ -11,7 +11,7 @@
 
 
 <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
     
     <style>
         /* All your CSS code stays exactly the same below this line */
@@ -124,7 +124,70 @@ body{
 
 /* ── BACKGROUND VIDEO ── */
 #bg-wrap{
-  position:fixed;inset:0;z-index:0;overflow:hidden;background:#1a0a2e;pointer-events:none;
+  position:fixed;inset:0;z-index:0;overflow:hidden;background:#05070d;pointer-events:none;
+}
+/* James Scholz–style robotics / CAD terminal wallpaper (shows when no YT clip) */
+.eng-backdrop{
+  position:absolute;inset:0;z-index:0;background:
+    radial-gradient(ellipse 120% 80% at 50% 110%,rgba(34,211,238,.06),transparent 55%),
+    radial-gradient(circle at 20% 20%,rgba(56,189,248,.06),transparent 40%),
+    linear-gradient(180deg,#070b12 0%,#030508 50%,#0a0f18 100%);
+  overflow:hidden;
+}
+.eng-grid{
+  position:absolute;inset:-50%;opacity:.22;
+  background-image:
+    linear-gradient(rgba(34,211,238,.09) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(34,211,238,.06) 1px,transparent 1px),
+    linear-gradient(rgba(245,158,11,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(245,158,11,.035) 1px,transparent 1px);
+  background-size:48px 48px,48px 48px,240px 240px,240px 240px;
+  transform:perspective(500px) rotateX(62deg);transform-origin:50% 0%;
+  animation:engGridDrift 48s linear infinite;
+}
+@keyframes engGridDrift{to{transform:perspective(500px) rotateX(62deg) translateY(48px)}}
+.eng-scan{
+  position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(transparent 0%,rgba(34,211,238,.035) 50%,transparent 100%);
+  background-size:100% 220%;animation:engScan 9s linear infinite;
+  mix-blend-mode:screen;
+}
+@keyframes engScan{0%{background-position:0 -100%}100%{background-position:0 100%}}
+.eng-hud-corner{
+  position:absolute;width:clamp(72px,15vw,180px);height:clamp(72px,15vw,180px);
+  border:1px solid rgba(34,211,238,.2);opacity:.85;
+}
+.eng-hud-corner::before{content:'';position:absolute;width:36%;height:36%;border:1px dashed rgba(245,158,11,.35)}
+.eng-hud-tl{top:28px;left:28px;border-right:none;border-bottom:none}
+.eng-hud-tl::before{top:-1px;left:-1px;border-right:none;border-bottom:none}
+.eng-hud-br{bottom:28px;right:28px;border-left:none;border-top:none}
+.eng-hud-br::before{bottom:-1px;right:-1px;border-left:none;border-top:none}
+.eng-readout{
+  position:absolute;left:32px;top:clamp(120px,18vh,200px);font-family:'DM Mono',monospace;
+  font-size:clamp(.45rem,.8vw,.55rem);line-height:1.9;color:rgba(167,243,208,.42);
+  letter-spacing:.16em;text-transform:uppercase;pointer-events:none;
+  text-shadow:0 0 12px rgba(34,211,238,.25);
+}
+.eng-svg{
+  position:absolute;bottom:-5%;left:50%;transform:translateX(-52%);width:min(140vh,260vw);max-width:none;
+  height:auto;opacity:.38;mix-blend-mode:screen;color:#22d3ee;
+}
+.eng-svg .joint{animation:jointPulse 3.8s ease-in-out infinite;}
+.eng-svg .joint.delay{animation-delay:1.2s}
+@keyframes jointPulse{
+  0%,100%{filter:drop-shadow(0 0 2px rgba(34,211,238,.3));}
+  50%{filter:drop-shadow(0 0 14px rgba(34,211,238,.85));}
+}
+.eng-dash{stroke-dasharray:42 62;stroke-dashoffset:0;animation:traceLine 28s linear infinite;}
+@keyframes traceLine{to{stroke-dashoffset:-520}}
+.circuit-mini{
+  position:absolute;right:8%;top:42%;width:min(380px,40vw);height:auto;opacity:.25;color:#fb923c;
+}
+#bg-wrap .eng-backdrop{opacity:1;transition:opacity .65s ease}
+#bg-wrap.has-yt-bg .eng-backdrop{opacity:.14}
+
+#yt-bg-el{
+  position:absolute;inset:0;z-index:1;width:100%;height:100%;
 }
 #bg-wrap iframe{
   position:absolute;top:50%;left:50%;
@@ -156,7 +219,7 @@ body{
 /* ── HEADER ── */
 .header{
   display:flex;align-items:center;justify-content:space-between;
-  padding:12px 18px 10px;
+  padding:12px 18px 10px;flex-wrap:wrap;gap:10px;
 }
 .logo{font-size:.75rem;font-weight:700;letter-spacing:.05em;color:var(--text2)}
 .mode-pill{
@@ -429,6 +492,96 @@ body.theme-black{
   --cat-stripe:#333333;
 }
 
+/* ── ARCH LAYOUT (optional: tools-only, no cat — toggle with header button) ── */
+body.layout-arch{
+  --bg1:#0c1218;
+  --bg2:#06090c;
+  --surface:rgba(14,20,28,0.94);
+  --surface2:rgba(10,14,20,0.9);
+  --border:rgba(23,147,209,0.2);
+  --border2:rgba(23,147,209,0.42);
+  --text:#dce8f3;
+  --text2:#7eb8d6;
+  --text3:#5a6570;
+  --purple:#1793d1;
+  --purple-light:#5ec8ff;
+  --purple-dim:rgba(23,147,209,0.14);
+  --pink:#6eb8e8;
+  --green:#73d491;
+  --red:#e87189;
+  --shadow:rgba(0,0,0,0.55);
+  --dim-color:10,14,18;
+  --cat-body:#1e4a5c;
+  --cat-belly:#152a36;
+  --cat-paw:#1793d1;
+  --cat-tail:#0f6a8f;
+  --cat-ear-inner:#2a5f78;
+  --cat-eye:#a8e9ff;
+  --cat-eye-shine:rgba(255,255,255,0.92);
+  --cat-nose:#1793d1;
+  --cat-mouth:#4db8e8;
+  --cat-whisker:#3d7fa3;
+  --cat-stripe:#0d5f82;
+}
+body.layout-arch{
+  background:linear-gradient(165deg,#0c1218 0%,#06090c 45%,#030508 100%);
+  font-family:'JetBrains Mono','DM Mono',ui-monospace,monospace;
+}
+body.layout-arch::before{
+  content:'';
+  position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.035;
+  background-image:
+    linear-gradient(rgba(23,147,209,.45) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(23,147,209,.45) 1px,transparent 1px);
+  background-size:22px 22px;
+}
+body.layout-arch .shell{position:relative;z-index:11}
+body.layout-arch .cat-card{display:none!important}
+body.layout-arch .card{
+  border-radius:5px;
+  border-left:3px solid var(--purple);
+  backdrop-filter:blur(12px);
+}
+.logo-arch-txt{display:none;font-size:.68rem;font-weight:600;letter-spacing:.04em;color:var(--text)}
+body.layout-arch .logo{font-family:'JetBrains Mono','DM Mono',monospace;font-weight:600;letter-spacing:.06em}
+body.layout-arch .logo-kitty-txt{display:none}
+body.layout-arch .logo-arch-txt{display:inline;color:var(--text2)}
+body.layout-arch .btn,
+body.layout-arch .theme-btn,
+body.layout-arch .cinema-btn,
+body.layout-arch .vid-transport .btn-transport{font-family:'JetBrains Mono','DM Mono',monospace}
+body.layout-arch .btn-main{
+  background:linear-gradient(135deg,#1793d1,#0a6f9c);
+  box-shadow:0 4px 18px rgba(23,147,209,.38);
+}
+body.layout-arch .btn-main:hover{box-shadow:0 6px 22px rgba(23,147,209,.55)}
+body.layout-arch .btn:hover{background:rgba(23,147,209,.12);color:var(--text);border-color:var(--purple-light)}
+body.layout-arch .theme-btn:hover{background:rgba(23,147,209,.14);color:var(--text)}
+body.layout-arch .bar-track,
+body.layout-arch .seek,
+body.layout-arch .range{background:rgba(23,147,209,.14)}
+body.layout-arch .sdot{background:rgba(23,147,209,.18);border-color:rgba(23,147,209,.35)}
+body.layout-arch .sdot.on{box-shadow:0 0 7px rgba(23,147,209,.45)}
+body.layout-arch .h-item{
+  background:rgba(23,147,209,.08);
+  border:1px solid rgba(23,147,209,.16);
+}
+body.layout-arch .inp,
+body.layout-arch select{background:rgba(8,12,18,.75);color:var(--text2)}
+body.layout-arch .toast{
+  background:rgba(10,16,24,.96);
+  border:1px solid rgba(23,147,209,.35);
+  border-radius:4px;
+  color:var(--text);
+  font-family:'JetBrains Mono','DM Mono',monospace;
+  font-size:.52rem;
+}
+body.layout-arch .cinema-btn-primary{
+  background:linear-gradient(135deg,#1793d1,#0a6f9c);
+  box-shadow:0 4px 18px rgba(23,147,209,.35);
+}
+body.layout-arch .cinema-btn-primary:hover{box-shadow:0 6px 22px rgba(23,147,209,.5)}
+
 /* ── AUTO START TOGGLE ── */
 .toggle-row{display:flex;align-items:center;justify-content:center;gap:10px;padding:2px 16px 12px}
 .toggle-lbl{font-size:.52rem;font-weight:700;letter-spacing:.08em;color:var(--text3);text-transform:uppercase}
@@ -474,6 +627,7 @@ body.cinema-mode #toast{bottom:88px}
   gap:8px;align-items:center;
 }
 body.theme-dark .cinema-dock,body.theme-black .cinema-dock{background:rgba(24,12,42,.92)}
+body.layout-arch .cinema-dock{background:rgba(10,14,20,.94);border-color:rgba(23,147,209,.28)}
 body.cinema-mode .cinema-dock{display:flex}
 .cinema-btn{
   border:none;background:var(--surface2);color:var(--text);font-size:.72rem;line-height:1;
@@ -500,21 +654,62 @@ body.cinema-mode .cinema-dock{display:flex}
 .vid-transport .btn-transport.is-paused{border-color:rgba(251,146,60,.55);color:#ea580c}
 
 @media (prefers-reduced-motion:reduce){
-  .cat-wrap,.cat-tail,.cat-ear-l,.cat-ear-r,.cat-eye,.cat-eye2,.cat-paw,.pill-dot{animation:none!important}
+  .cat-wrap,.cat-tail,.cat-ear-l,.cat-ear-r,.cat-eye,.cat-eye2,.cat-paw,.pill-dot,.eng-grid,.eng-scan,.eng-svg .joint,.eng-dash{animation:none!important}
+  .eng-svg .eng-dash{stroke-dasharray:none!important}
 }
 </style>
 </head>
 <body>
 
-<div id="bg-wrap"></div>
+<div id="bg-wrap">
+  <div class="eng-backdrop" aria-hidden="true">
+    <div class="eng-grid"></div>
+    <div class="eng-scan"></div>
+    <div class="eng-hud-corner eng-hud-tl"></div>
+    <div class="eng-hud-corner eng-hud-br"></div>
+    <div class="eng-readout">
+      SYS.RIG ─ CAL_OK<br/>
+      SEQ 742 ─ TORQUE_HOLD<br/>
+      IK_SOLVER ─ CONVERGED<br/>
+      ─ DEEP_FOCUS_MODE
+    </div>
+    <svg class="eng-svg circuit-mini" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg" fill="none">
+      <rect x="4" y="4" width="192" height="112" rx="4" stroke="currentColor" stroke-width="1" opacity=".4"/>
+      <path class="eng-dash" d="M22 96h156M22 74h124M46 52h132M72 30h106" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="34" cy="96" r="4" stroke="currentColor" stroke-width="1"/>
+      <circle cx="154" cy="52" r="4" stroke="currentColor" stroke-width="1"/>
+    </svg>
+    <svg class="eng-svg" viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg">
+      <!-- schematic robotics arm blueprint -->
+      <g stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path opacity=".35" stroke-width=".8" d="M120 460h560M120 460V180M680 460V220"/>
+        <path class="eng-dash" stroke-width="2.2" d="M390 438 L390 322 L478 266 L582 296 L628 208 L694 246"/>
+        <path stroke-width="1.4" opacity=".85" d="M390 438 L348 394 L392 356 L390 322"/>
+        <path stroke-width="1.6" opacity=".92" d="M390 322 L478 266 L528 348 L478 384 L390 322"/>
+        <path stroke-width="1.45" opacity=".9" d="M478 266 L582 296 L596 382 L538 394 L478 348"/>
+        <path stroke-width="1.55" opacity=".95" d="M582 296 L628 208 L694 246"/>
+        <circle cx="390" cy="438" r="22" stroke-width="2" class="joint"/>
+        <circle cx="478" cy="266" r="18" stroke-width="2" class="joint delay"/>
+        <circle cx="628" cy="208" r="14" stroke-width="1.8" class="joint"/>
+        <circle cx="694" cy="246" r="10" stroke-width="2" opacity=".95"/>
+        <!-- end effector jaws -->
+        <path stroke-width="1.6" opacity=".95" stroke="#fb923c" d="M702 258l26-46M702 258l36 12"/>
+      </g>
+    </svg>
+  </div>
+</div>
 <div class="bg-dim" id="bg-dim"></div>
 
 <div class="shell">
 
   <!-- HEADER -->
   <div class="card header">
-    <div class="logo">🐱 Focus Kitty</div>
-    <div style="display:flex;align-items:center;gap:8px">
+    <div class="logo">
+      <span class="logo-kitty-txt">🐱 Focus Kitty</span>
+      <span class="logo-arch-txt">[ focus-tty — core/extra ]</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:flex-end">
+      <button class="theme-btn" type="button" id="layout-toggle-btn" onclick="toggleArchLayout()" title="Arch-style layout: no mascot, same tools. Click again for Kitty UI.">🏔️ Arch UI</button>
       <button class="theme-btn" id="theme-btn" onclick="cycleTheme()">🌙 Dark</button>
       <button class="theme-btn" type="button" id="zen-btn" onclick="toggleCinemaMode()" title="Zen — background video only (Esc to exit)">Zen</button>
       <div class="mode-pill" id="mode-pill">
@@ -744,6 +939,7 @@ const FOCUS=50*60,BREAK=10*60;
 let isRunning=false,isFocus=true,remaining=FOCUS;
 let interval=null,sessions=0,ytVol=70,alarmVol=0.8;
 let autoStart=false;
+try{const _as=localStorage.getItem('fk-autostart');if(_as==='1')autoStart=true;if(_as==='0')autoStart=false;}catch(e){}
 let totalFocusSecs=0,bestStreak=0,currentStreak=0;
 let sessionHistory=[];
 let bgPlayer=null,pFocus=null,pBreak=null;
@@ -822,6 +1018,12 @@ function extractId(url){
   for(const r of p){const m=url.match(r);if(m)return m[1];}return'';
 }
 
+function ensureYtMount(){
+  const w=$('bg-wrap');let el=$('yt-bg-el');
+  if(!el){el=document.createElement('div');el.id='yt-bg-el';w.appendChild(el);}
+  return el;
+}
+
 function applyBg(){
   const url=$('bg-url').value.trim();
   bgId=extractId(url);
@@ -829,7 +1031,8 @@ function applyBg(){
   if(!bgId){clearBg();return;}
   bgIsLive=url.includes('/live/')||url.includes('live=1');
   destroyBg();
-  $('bg-wrap').innerHTML='<div id="yt-bg-el"></div>';
+  $('bg-wrap').classList.remove('has-yt-bg');
+  ensureYtMount();
   if(ytReady)buildBgPlayer();else pendingBgPlay=true;
 }
 function buildBgPlayer(){
@@ -843,6 +1046,7 @@ function buildBgPlayer(){
       e.target.mute();
       if(bgVolume>0){e.target.unMute();e.target.setVolume(bgVolume);}
       e.target.playVideo();
+      $('bg-wrap').classList.add('has-yt-bg');
       $('video-tl').style.display='block';
       $('live-badge').classList[bgIsLive?'add':'remove']('show');
       startTl();
@@ -861,7 +1065,12 @@ function buildBgPlayer(){
     }
   }});
 }
-function clearBg(){destroyBg();$('bg-wrap').innerHTML='';$('video-tl').style.display='none';stopTl();bgId='';syncBgPlayButton();}
+function clearBg(){
+  destroyBg();
+  const yt=$('yt-bg-el');if(yt)yt.remove();
+  $('bg-wrap').classList.remove('has-yt-bg');
+  $('video-tl').style.display='none';stopTl();bgId='';syncBgPlayButton();
+}
 function destroyBg(){stopTl();if(bgPlayer){try{bgPlayer.destroy();}catch(e){}bgPlayer=null;}syncBgPlayButton();}
 
 function tlIntervalMs(){
@@ -955,6 +1164,7 @@ function toggleCinemaMode(){
 // ── AUTO START ──
 function toggleAutoStart(){
   autoStart=!autoStart;
+  try{localStorage.setItem('fk-autostart',autoStart?'1':'0');}catch(e){}
   const track=$('autostart-track');
   const status=$('autostart-status');
   track.classList.toggle('on',autoStart);
@@ -966,6 +1176,8 @@ function toggleAutoStart(){
 const THEMES=['default','dark','bw','black'];
 const THEME_LABELS=['🌙 Dark','⬜ B&W','⬛ Black','🌸 Purple'];
 let themeIdx=0;
+let layoutArch=false;
+try{if(localStorage.getItem('fk-layout')==='arch')layoutArch=true;}catch(e){}
 function cycleTheme(){
   themeIdx=(themeIdx+1)%THEMES.length;
   applyTheme();
@@ -979,6 +1191,22 @@ function applyTheme(){
   // re-apply dim with new color
   const v=parseInt($('dim-r').value);
   setTimeout(()=>updateDim(v),10);
+}
+function applyLayout(){
+  document.body.classList.toggle('layout-arch',layoutArch);
+  const lb=$('layout-toggle-btn');
+  if(lb){
+    lb.textContent=layoutArch?'🐱 Kitty UI':'🏔️ Arch UI';
+    lb.title=layoutArch?'Back to Focus Kitty layout (mascot + soft UI)':'Arch-style layout: no mascot, same tools';
+  }
+  const v=parseInt($('dim-r').value);
+  setTimeout(()=>updateDim(v),10);
+}
+function toggleArchLayout(){
+  layoutArch=!layoutArch;
+  try{localStorage.setItem('fk-layout',layoutArch?'arch':'kitty');}catch(e){}
+  applyLayout();
+  showToast(layoutArch?'Arch layout — tools only, no mascot':'Kitty layout — full UI');
 }
 function updateBgVol(v){
   bgVolume=parseInt(v);$('bgvol-v').textContent=v+'%';
@@ -1050,6 +1278,8 @@ function resetTimer(){
 }
 function skipPhase(){clearInterval(interval);isRunning=false;phaseComplete();}
 function phaseComplete(){
+  isRunning=false;
+  if(interval){clearInterval(interval);interval=null;}
   pauseAudio();
   const d=$('timer-display');d.classList.add('glitch');setTimeout(()=>d.classList.remove('glitch'),400);
   playAlarm();
@@ -1182,6 +1412,11 @@ document.addEventListener('visibilitychange',()=>{
   }
 });
 
+(function syncAutoStartUi(){
+  const tr=$('autostart-track'),st=$('autostart-status');
+  if(tr){tr.classList.toggle('on',autoStart);if(st)st.textContent=autoStart?'On':'Off';}
+})();
+applyLayout();
 updateUI();updateStats();
 </script>
 </body>
