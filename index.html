@@ -48,7 +48,9 @@ body {
 .yt-wrap { position: relative; padding-top: 56.25%; background: #000; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .yt-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-.spotify-wrap { padding: 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; }
+.spotify-wrap { padding: 8px 12px 10px; background: rgba(29,185,84,0.06); border-bottom: 1px solid rgba(29,185,84,0.12); }
+.spotify-label { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #1DB954; margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+.spotify-label svg { flex-shrink: 0; }
 
 .card-info { padding: 1.2rem; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
 .card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -262,13 +264,26 @@ function updateELO(winnerId, loserId) {
   ratings[loserId] = Math.round(rL + K * (0 - eL));
 }
 
-// Dynamically renders Spotify if "sid" exists, otherwise uses YouTube "vid"
+// Renders YouTube video + Spotify search embed side by side (stacked).
+// Spotify acts as an audio fallback if the YouTube link doesn't work.
 function renderMedia(item) {
+  // Use specific Spotify track ID if provided, otherwise fall back to search
+  let spotifyUrl;
   if (item.sid) {
-    return `<div class="spotify-wrap"><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${item.sid}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>`;
+    spotifyUrl = `https://open.spotify.com/embed/track/${item.sid}?utm_source=generator&theme=0`;
   } else {
-    return `<div class="yt-wrap"><iframe src="https://www.youtube.com/embed/${item.vid}?autoplay=0&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+    const query = encodeURIComponent(`${item.title} ${item.anime}`);
+    spotifyUrl = `https://open.spotify.com/embed/search/${query}?utm_source=generator&theme=0`;
   }
+
+  const spotifyIcon = `<svg width="12" height="12" viewBox="0 0 24 24" fill="#1DB954" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`;
+
+  return `
+    <div class="yt-wrap"><iframe src="https://www.youtube.com/embed/${item.vid}?autoplay=0&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+    <div class="spotify-wrap">
+      <div class="spotify-label">${spotifyIcon} Spotify · Audio Fallback</div>
+      <iframe style="border-radius:8px" src="${spotifyUrl}" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    </div>`;
 }
 
 function getAnimeColor(anime) {
