@@ -42,17 +42,19 @@ body {
 
 .vs-badge { font-size: 22px; font-weight: 700; color: var(--bg-main); background: var(--accent); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: var(--glow); margin: 0 auto; z-index: 2; }
 
-.card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--border-radius); overflow: hidden; transition: all 0.3s ease; }
+.card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--border-radius); overflow: hidden; transition: all 0.3s ease; display: flex; flex-direction: column; }
 .card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.5), var(--glow); }
 
 .yt-wrap { position: relative; padding-top: 56.25%; background: #000; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .yt-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
-.card-info { padding: 1.2rem; text-align: center; }
+.spotify-wrap { padding: 15px; background: rgba(0,0,0,0.2); border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; }
+
+.card-info { padding: 1.2rem; text-align: center; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
 .card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .card-sub { font-size: 12px; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 15px; }
 
-.vote-btn { width: 100%; padding: 11px; border: 2px solid var(--accent-dim); border-radius: 8px; background: transparent; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent); font-family: var(--font-sans); transition: all 0.2s; text-transform: uppercase; }
+.vote-btn { width: 100%; padding: 11px; border: 2px solid var(--accent-dim); border-radius: 8px; background: transparent; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent); font-family: var(--font-sans); transition: all 0.2s; text-transform: uppercase; margin-top: auto; }
 .vote-btn:hover { background: var(--accent); color: var(--bg-main); box-shadow: var(--glow); }
 .vote-btn:active { transform: scale(0.97); }
 
@@ -184,7 +186,7 @@ const openings = [
   {id:'86a1',title:'3-nen E-gumi Utatan',anime:'86 Eighty Six',ep:'OP 1',vid:'eFpINRi-W8Y'},
   {id:'86a2',title:'Avid',anime:'86 Eighty Six',ep:'OP 2',vid:'3zSHsj8HdKc'},
   {id:'pp1',title:'abnormalize',anime:'Psycho-Pass',ep:'OP 1',vid:'SxrqGcRFXlo'},
-  {id:'pp2',title:'Out of Control',anime:'Psycho-Pass',ep(--user):'OP 2',vid:'0q4MxELlqGA'},
+  {id:'pp2',title:'Out of Control',anime:'Psycho-Pass',ep:'OP 2',vid:'0q4MxELlqGA'},
   {id:'mon1',title:'For the Love of Life',anime:'Monster',ep:'OP 1',vid:'rXP-qD4oQr0'},
   {id:'cg1',title:'Colors',anime:'Code Geass',ep:'OP 1',vid:'cZ7zQbMxm28'},
   {id:'cg2',title:'Kaidoku Funou',anime:'Code Geass',ep:'OP 2',vid:'3Sl4hEAQ_4Y'},
@@ -236,17 +238,14 @@ function shuffle(arr) {
   return a;
 }
 
-// Dynamically creates battles scaled exactly to how long your list is
 function makePairs() {
   const shuffled = shuffle(openings);
   const ps = [];
   
-  // Round 1: Pair up everything so everyone fights at least once
   for (let i = 0; i < shuffled.length - 1; i += 2) {
     ps.push([shuffled[i], shuffled[i+1]]);
   }
   
-  // Round 2: Re-shuffle and add another round to cross-pollinate rankings properly
   const roundTwo = shuffle(openings);
   for (let i = 0; i < roundTwo.length - 1; i += 2) {
     ps.push([roundTwo[i], roundTwo[i+1]]);
@@ -263,8 +262,13 @@ function updateELO(winnerId, loserId) {
   ratings[loserId] = Math.round(rL + K * (0 - eL));
 }
 
-function ytEmbed(vid) {
-  return `<div class="yt-wrap"><iframe src="https://www.youtube.com/embed/${vid}?autoplay=0&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+// Dynamically renders Spotify if "sid" exists, otherwise uses YouTube "vid"
+function renderMedia(item) {
+  if (item.sid) {
+    return `<div class="spotify-wrap"><iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/${item.sid}?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe></div>`;
+  } else {
+    return `<div class="yt-wrap"><iframe src="https://www.youtube.com/embed/${item.vid}?autoplay=0&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+  }
 }
 
 function getAnimeColor(anime) {
@@ -319,7 +323,7 @@ function render() {
     <div style="font-size: 13px; color: var(--text-muted); text-align:center; margin-bottom:12px; font-weight:500; text-transform:uppercase; letter-spacing:1px;">Select your preference</div>
     <div class="battle-grid">
       <div class="card" id="card-a">
-        ${ytEmbed(a.vid)}
+        ${renderMedia(a)}
         <div class="card-info">
           <div class="card-title">${a.title}</div>
           <div class="card-sub" style="color:${getAnimeColor(a.anime)}">${a.anime} · ${a.ep}</div>
@@ -328,7 +332,7 @@ function render() {
       </div>
       <div class="vs-badge">VS</div>
       <div class="card" id="card-b">
-        ${ytEmbed(b.vid)}
+        ${renderMedia(b)}
         <div class="card-info">
           <div class="card-title">${b.title}</div>
           <div class="card-sub" style="color:${getAnimeColor(b.anime)}">${b.anime} · ${b.ep}</div>
