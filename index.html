@@ -9,13 +9,13 @@
 :root {
   --font-sans: 'Poppins', sans-serif;
   --bg-main: #0b0c10;
-  --bg-card: rgba(31, 40, 51, 0.7);
+  --bg-card: rgba(31, 40, 51, 0.65);
   --accent: #66fcf1;
   --accent-dim: #45a29e;
   --text-main: #ffffff;
   --text-muted: #c5c6c7;
   --border-radius: 16px;
-  --glow: 0 0 15px rgba(102, 252, 241, 0.4);
+  --glow: 0 0 15px rgba(102, 252, 241, 0.35);
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,7 +29,7 @@ body {
   min-height: 100vh;
 }
 
-.arena { max-width: 900px; margin: 0 auto; padding: 2rem 1rem; min-height: 600px; }
+.arena { max-width: 1000px; margin: 0 auto; padding: 2rem 1rem; min-height: 600px; }
 
 .header { text-align: center; margin-bottom: 2rem; }
 .header h1 { font-size: 28px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; text-shadow: var(--glow); margin-bottom: 8px; }
@@ -40,19 +40,19 @@ body {
 
 .battle-grid { display: grid; grid-template-columns: 1fr auto 1fr; gap: 1.5rem; align-items: center; margin-bottom: 1.5rem; }
 
-.vs-badge { font-size: 24px; font-weight: 700; color: var(--bg-main); background: var(--accent); width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: var(--glow); margin: 0 auto; z-index: 2; }
+.vs-badge { font-size: 22px; font-weight: 700; color: var(--bg-main); background: var(--accent); width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: var(--glow); margin: 0 auto; z-index: 2; }
 
 .card { background: var(--bg-card); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--border-radius); overflow: hidden; transition: all 0.3s ease; }
-.card:hover { border-color: var(--accent); transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.5), var(--glow); }
+.card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 10px 25px rgba(0,0,0,0.5), var(--glow); }
 
 .yt-wrap { position: relative; padding-top: 56.25%; background: #000; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .yt-wrap iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
 
 .card-info { padding: 1.2rem; text-align: center; }
-.card-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-.card-sub { font-size: 13px; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 15px; }
+.card-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-sub { font-size: 12px; font-weight: 500; letter-spacing: 0.5px; margin-bottom: 15px; }
 
-.vote-btn { width: 100%; padding: 12px; border: 2px solid var(--accent-dim); border-radius: 8px; background: transparent; cursor: pointer; font-size: 14px; font-weight: 600; color: var(--accent); font-family: var(--font-sans); transition: all 0.2s; text-transform: uppercase; }
+.vote-btn { width: 100%; padding: 11px; border: 2px solid var(--accent-dim); border-radius: 8px; background: transparent; cursor: pointer; font-size: 13px; font-weight: 600; color: var(--accent); font-family: var(--font-sans); transition: all 0.2s; text-transform: uppercase; }
 .vote-btn:hover { background: var(--accent); color: var(--bg-main); box-shadow: var(--glow); }
 .vote-btn:active { transform: scale(0.97); }
 
@@ -60,23 +60,25 @@ body {
 .skip-btn { background: none; border: none; font-size: 13px; color: var(--text-muted); cursor: pointer; transition: color 0.2s; }
 .skip-btn:hover { color: var(--text-main); text-decoration: underline; }
 
-.rankings { padding: 1.5rem 0; }
-.rank-item { display: flex; align-items: center; gap: 15px; padding: 12px 16px; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; margin-bottom: 10px; transition: transform 0.2s; }
-.rank-item:hover { transform: translateX(5px); background: rgba(31, 40, 51, 0.9); border-color: rgba(255,255,255,0.2); }
-.rank-item.gold { border: 1px solid #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
+.rankings { padding: 1.5rem 0; display: grid; grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 768px) { .rankings { grid-template-columns: 1fr 1fr; gap: 15px; } }
+
+.rank-item { display: flex; align-items: center; gap: 15px; padding: 12px 16px; background: var(--bg-card); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; transition: transform 0.2s; }
+.rank-item:hover { transform: translateX(4px); background: rgba(31, 40, 51, 0.9); border-color: rgba(255,255,255,0.2); }
+.rank-item.gold { border: 1px solid #FFD700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.15); }
 .rank-item.silver { border: 1px solid #C0C0C0; }
 .rank-item.bronze { border: 1px solid #CD7F32; }
 
-.rank-num { font-size: 20px; font-weight: 700; min-width: 35px; color: var(--text-muted); }
-.rank-info { flex: 1; }
-.rank-title { font-size: 15px; font-weight: 600; }
-.rank-sub { font-size: 12px; margin-top: 2px; }
-.rank-score { font-size: 16px; font-weight: 700; color: var(--accent); min-width: 60px; text-align: right; }
+.rank-num { font-size: 18px; font-weight: 700; min-width: 35px; color: var(--text-muted); }
+.rank-info { flex: 1; min-width: 0; }
+.rank-title { font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank-sub { font-size: 12px; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rank-score { font-size: 15px; font-weight: 700; color: var(--accent); min-width: 55px; text-align: right; }
 
 .elo-bar-wrap { height: 4px; background: rgba(255,255,255,0.1); border-radius: 99px; margin-top: 8px; overflow: hidden; }
 .elo-bar { height: 100%; background: var(--accent); border-radius: 99px; box-shadow: var(--glow); }
 
-.medal { font-size: 24px; min-width: 35px; }
+.medal { font-size: 22px; min-width: 35px; }
 
 .winner-banner { text-align: center; padding: 2.5rem 1rem; background: linear-gradient(135deg, rgba(31,40,51,0.9), rgba(11,12,16,0.9)); border-radius: var(--border-radius); border: 1px solid var(--accent); box-shadow: var(--glow); margin-bottom: 2rem; }
 .winner-banner .big { font-size: 50px; margin-bottom: 10px; animation: bounce 2s infinite; }
@@ -93,7 +95,7 @@ body {
 .restart-btn:hover { background: var(--accent); color: var(--bg-main); box-shadow: var(--glow); }
 
 @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-@media (max-width: 768px) { .battle-grid { grid-template-columns: 1fr; gap: 1rem; } .vs-badge { margin: -10px auto; } }
+@media (max-width: 768px) { .battle-grid { grid-template-columns: 1fr; gap: 1rem; } .vs-badge { margin: -5px auto; } }
 </style>
 </head>
 <body>
@@ -101,24 +103,117 @@ body {
 <div class="arena" id="app"></div>
 
 <script>
-// Highly verified, official, and embeddable YouTube links
 const openings = [
-  {id:'aot6', title:'The Rumbling', anime:'Attack on Titan', ep:'OP 6', vid:'2S4qGKmzBJE', color:'#8b0000'},
-  {id:'jjk1', title:'Kaikai Kitan', anime:'Jujutsu Kaisen', ep:'OP 1', vid:'v8bZVdTgXoY', color:'#1B5E20'},
-  {id:'csm1', title:'KICK BACK', anime:'Chainsaw Man', ep:'OP 1', vid:'dFlDRhvM4L0', color:'#B71C1C'},
-  {id:'osk1', title:'Idol', anime:'Oshi No Ko', ep:'OP 1', vid:'ZRtdQ81jPUQ', color:'#FF1493'},
-  {id:'msl2', title:'Bling-Bang-Bang-Born', anime:'Mashle', ep:'OP 2', vid:'210R0ozmLwg', color:'#FFD700'},
-  {id:'spy1', title:'Mixed Nuts', anime:'Spy × Family', ep:'OP 1', vid:'OVRkewDxFCE', color:'#FF7F50'},
-  {id:'mob1', title:'99', anime:'Mob Psycho 100', ep:'OP 1', vid:'Bw-5Lpz7wA4', color:'#00FFFF'},
-  {id:'fri1', title:'Yusha', anime:'Frieren', ep:'OP 1', vid:'OIBODIPC_8Y', color:'#4682B4'},
-  {id:'ds1',  title:'Gurenge', anime:'Demon Slayer', ep:'OP 1', vid:'tGkHwD08kUM', color:'#2E8B57'},
-  {id:'sl1',  title:'LEveL', anime:'Solo Leveling', ep:'OP 1', vid:'wYgH-u_KkH8', color:'#1E90FF'},
-  {id:'op20', title:'PAINT', anime:'One Piece', ep:'OP 20', vid:'81X1gqH8l3s', color:'#FF8C00'},
-  {id:'btr1', title:'Seishun Complex', anime:'Bocchi The Rock!', ep:'OP 1', vid:'Yd8kUoO7X8w', color:'#FF69B4'},
-  {id:'zom1', title:'Song of the Dead', anime:'Zom 100', ep:'OP 1', vid:'l12y7D-bZ8o', color:'#00FA9A'},
-  {id:'kju1', title:'Abyss', anime:'Kaiju No. 8', ep:'OP 1', vid:'y7L8V6o_qV0', color:'#32CD32'},
-  {id:'dan1', title:'Otonoke', anime:'Dandadan', ep:'OP 1', vid:'d_gvxc-mS84', color:'#DA70D6'},
-  {id:'cbe1', title:'This Fire', anime:'Cyberpunk Edgerunners', ep:'OP 1', vid:'JtP2I1_wKqM', color:'#FFFF00'}
+  {id:'n1',title:'Rocks',anime:'Naruto',ep:'OP 1',vid:'uO0m06S4ZkY'},
+  {id:'n2',title:'Haruka Kanata',anime:'Naruto',ep:'OP 2',vid:'nJ6A8UMVbFU'},
+  {id:'n3',title:'Kanashimi Wo Yasashisa Ni',anime:'Naruto',ep:'OP 3',vid:'6E8C6Tf5Cio'},
+  {id:'n4',title:'GO!!!',anime:'Naruto',ep:'OP 4',vid:'1YwN-7gS074'},
+  {id:'n5',title:'Seishun Kyosokyoku',anime:'Naruto',ep:'OP 5',vid:'N9V9vj7mG-k'},
+  {id:'n6',title:'No Boy No Cry',anime:'Naruto',ep:'OP 6',vid:'Gs_X6U9LpX8'},
+  {id:'n7',title:'Distance',anime:'Naruto',ep:'OP 7',vid:'v9f_2W2_xXg'},
+  {id:'n8',title:'Re:Member',anime:'Naruto',ep:'OP 8',vid:'8MceX-u_90E'},
+  {id:'ns1',title:'Hero\'s Come Back',anime:'Naruto Shippuden',ep:'OP 1',vid:'4f7_Xf_lqFk'},
+  {id:'ns2',title:'Distance (Shippuden)',anime:'Naruto Shippuden',ep:'OP 2',vid:'u8C8gN6Xm00'},
+  {id:'ns3',title:'Blue Bird',anime:'Naruto Shippuden',ep:'OP 3',vid:'KpsWWyf77Jo'},
+  {id:'ns4',title:'Closer',anime:'Naruto Shippuden',ep:'OP 4',vid:'JeeH_7A0X0A'},
+  {id:'ns5',title:'Hotaru no Hikari',anime:'Naruto Shippuden',ep:'OP 5',vid:'wz63oXvPZ_Y'},
+  {id:'ns6',title:'Sign',anime:'Naruto Shippuden',ep:'OP 6',vid:'o39L4r_Rry8'},
+  {id:'ns7',title:'Totsugeki Rock',anime:'Naruto Shippuden',ep:'OP 7',vid:'yO_P7I_yE7c'},
+  {id:'ns8',title:'Diver',anime:'Naruto Shippuden',ep:'OP 8',vid:'ByT_FkaXvlo'},
+  {id:'ns9',title:'Lovers',anime:'Naruto Shippuden',ep:'OP 9',vid:'Vre8G9Z9Gms'},
+  {id:'ns10',title:'Newsong',anime:'Naruto Shippuden',ep:'OP 10',vid:'v89m_lYp_G8'},
+  {id:'ns11',title:'Y\'s & YAH',anime:'Naruto Shippuden',ep:'OP 11',vid:'YvR_N7V_L7A'},
+  {id:'ns12',title:'Moshimo',anime:'Naruto Shippuden',ep:'OP 12',vid:'4S_l_Xw_pQ8'},
+  {id:'ns13',title:'Niwaka Ame Nimo Makezu',anime:'Naruto Shippuden',ep:'OP 13',vid:'oE8M1_K0X8A'},
+  {id:'ns14',title:'Tsuki no Ookisa',anime:'Naruto Shippuden',ep:'OP 14',vid:'o7_R_lM_O8A'},
+  {id:'ns15',title:'Guren',anime:'Naruto Shippuden',ep:'OP 15',vid:'w7X_mX9_N8A'},
+  {id:'ns16',title:'Silhouette',anime:'Naruto Shippuden',ep:'OP 16',vid:'25FB6NclUrc'},
+  {id:'ns17',title:'Kaze',anime:'Naruto Shippuden',ep:'OP 17',vid:'7_N_pX_X08A'},
+  {id:'ns18',title:'Harukanaru Mirai',anime:'Naruto Shippuden',ep:'OP 18',vid:'X8_v_M_O8AA'},
+  {id:'ns19',title:'Empty Heart',anime:'Naruto Shippuden',ep:'OP 19',vid:'Xv_M_V9_O8AA'},
+  {id:'ns20',title:'Kara no Kokoro',anime:'Naruto Shippuden',ep:'OP 20',vid:'4T_O_v9_L7A'},
+  {id:'dn1',title:'The World',anime:'Death Note',ep:'OP 1',vid:'8QEHTxhfD9Y'},
+  {id:'dn2',title:'What\'s Up People?!',anime:'Death Note',ep:'OP 2',vid:'dI1N_v8_X7A'},
+  {id:'mha1',title:'The Day',anime:'My Hero Academia',ep:'OP 1',vid:'WOSqmMxeD2Q'},
+  {id:'mha2',title:'Peace Sign',anime:'My Hero Academia',ep:'OP 2',vid:'v8bZVdTgXoY'},
+  {id:'mha3',title:'Sora ni Utaeba',anime:'My Hero Academia',ep:'OP 3',vid:'Rq_BNAyXLkI'},
+  {id:'mha4',title:'ODD FUTURE',anime:'My Hero Academia',ep:'OP 4',vid:'PVrklNnI-L4'},
+  {id:'mha5',title:'Star Maker',anime:'My Hero Academia',ep:'OP 5',vid:'qvfyFm00Gbg'},
+  {id:'mha6',title:'Polaris',anime:'My Hero Academia',ep:'OP 6',vid:'lhO3EM3YIVQ'},
+  {id:'mha7',title:'No. 1',anime:'My Hero Academia',ep:'OP 7',vid:'g7nN3RM8p9Q'},
+  {id:'op1',title:'We Are!',anime:'One Piece',ep:'OP 1',vid:'ZwU8X5_X7Ao'},
+  {id:'op2',title:'Believe',anime:'One Piece',ep:'OP 2',vid:'uLDLRkqBezQ'},
+  {id:'op3',title:'Hikari E',anime:'One Piece',ep:'OP 3',vid:'6yGaJ0R4NrA'},
+  {id:'op4',title:'BON VOYAGE!',anime:'One Piece',ep:'OP 4',vid:'_xRFcPBH7LE'},
+  {id:'op5',title:'Kokoro no Chizu',anime:'One Piece',ep:'OP 5',vid:'F-FJNh3WZM4'},
+  {id:'op6',title:'Brand New World',anime:'One Piece',ep:'OP 6',vid:'MvPAlgWfWfs'},
+  {id:'op7',title:'We Are! (Redux)',anime:'One Piece',ep:'OP 7',vid:'Iqd_5A4vlhM'},
+  {id:'op8',title:'Crazy Rainbow Star',anime:'One Piece',ep:'OP 8',vid:'8lMRyHxwZps'},
+  {id:'op9',title:'Jungle P',anime:'One Piece',ep:'OP 9',vid:'2sRqIiRAM_Y'},
+  {id:'op10',title:'Share the World',anime:'One Piece',ep:'OP 10',vid:'cnBW4IvjsSg'},
+  {id:'op11',title:'Fight Together',anime:'One Piece',ep:'OP 11',vid:'7n-MaScTQQs'},
+  {id:'op12',title:'We Go!',anime:'One Piece',ep:'OP 12',vid:'JJBMh_FjFYs'},
+  {id:'op13',title:'Hands Up!',anime:'One Piece',ep:'OP 13',vid:'xStZBg0I8f8'},
+  {id:'op14',title:'Wake Up!',anime:'One Piece',ep:'OP 14',vid:'pWi9CmYpOjw'},
+  {id:'op15',title:'Hard Knock Days',anime:'One Piece',ep:'OP 15',vid:'yb3DFcMnJbs'},
+  {id:'op16',title:'We Can!',anime:'One Piece',ep:'OP 16',vid:'6Ni_Cx8sMbc'},
+  {id:'op17',title:'Hope',anime:'One Piece',ep:'OP 17',vid:'pNbrAZ5QKBU'},
+  {id:'op18',title:'Super Powers',anime:'One Piece',ep:'OP 18',vid:'xVT7V1VsmRg'},
+  {id:'op19',title:'DREAMIN ON',anime:'One Piece',ep:'OP 19',vid:'lRJMLBpPJh8'},
+  {id:'op20',title:'PAINT',anime:'One Piece',ep:'OP 20',vid:'81X1gqH8l3s'},
+  {id:'op21',title:'RAISING',anime:'One Piece',ep:'OP 21',vid:'Uvc8KGZL5i0'},
+  {id:'op22',title:'EYE OF THE STORM',anime:'One Piece',ep:'OP 22',vid:'CQOmMDGv5k4'},
+  {id:'dd1',title:'Otonoke',anime:'Dandadan',ep:'OP 1',vid:'d_gvxc-mS84'},
+  {id:'tg1',title:'Unravel',anime:'Tokyo Ghoul',ep:'OP 1',vid:'7aMOurgDB-o'},
+  {id:'tg2',title:'Munou',anime:'Tokyo Ghoul Root A',ep:'OP 1',vid:'A9M9bGAi30I'},
+  {id:'tr1',title:'Cry Baby',anime:'Tokyo Revengers',ep:'OP 1',vid:'gISSPaEFLXA'},
+  {id:'tr2',title:'Hakanai',anime:'Tokyo Revengers',ep:'OP 2',vid:'9Sh6Y1K_lOM'},
+  {id:'dbs1',title:'Chozetsu Dynamic!',anime:'Dragon Ball Super',ep:'OP 1',vid:'hB3B-n5j7Fw'},
+  {id:'fma1',title:'Melissa',anime:'Fullmetal Alchemist',ep:'OP 1',vid:'1bFkqxYKUQM'},
+  {id:'fma2',title:'Rewrite',anime:'FMA Brotherhood',ep:'OP 4',vid:'8bEm1gT7JuI'},
+  {id:'fma3',title:'Again',anime:'FMA Brotherhood',ep:'OP 1',vid:'V6S6sPr50CI'},
+  {id:'jjk1',title:'Kaikai Kitan',anime:'Jujutsu Kaisen',ep:'OP 1',vid:'LG9VTbSWAhA'},
+  {id:'jjk2',title:'Vivid Vice',anime:'Jujutsu Kaisen',ep:'OP 2',vid:'M5xFjOqJgkE'},
+  {id:'csm1',title:'KICK BACK',anime:'Chainsaw Man',ep:'OP 1',vid:'dFlDRhvM4L0'},
+  {id:'aot1',title:'Guren no Yumiya',anime:'Attack on Titan',ep:'OP 1',vid:'Nid9LuR_L-w'},
+  {id:'aot2',title:'Jiyuu no Tsubasa',anime:'Attack on Titan',ep:'OP 2',vid:'oEbMPMnNGdk'},
+  {id:'aot3',title:'Shinzou wo Sasageyo!',anime:'Attack on Titan',ep:'OP 3',vid:'h6Bg-cVjExo'},
+  {id:'aot4',title:'Red Swan',anime:'Attack on Titan',ep:'OP 4',vid:'jJsK4A6yM7s'},
+  {id:'aot5',title:'My War',anime:'Attack on Titan',ep:'OP 5',vid:'8TIhXkPEWMs'},
+  {id:'aot6',title:'The Rumbling',anime:'Attack on Titan',ep:'OP 6',vid:'2S4qGKmzBJE'},
+  {id:'86a1',title:'3-nen E-gumi Utatan',anime:'86 Eighty Six',ep:'OP 1',vid:'eFpINRi-W8Y'},
+  {id:'86a2',title:'Avid',anime:'86 Eighty Six',ep:'OP 2',vid:'3zSHsj8HdKc'},
+  {id:'pp1',title:'abnormalize',anime:'Psycho-Pass',ep:'OP 1',vid:'SxrqGcRFXlo'},
+  {id:'pp2',title:'Out of Control',anime:'Psycho-Pass',ep(--user):'OP 2',vid:'0q4MxELlqGA'},
+  {id:'mon1',title:'For the Love of Life',anime:'Monster',ep:'OP 1',vid:'rXP-qD4oQr0'},
+  {id:'cg1',title:'Colors',anime:'Code Geass',ep:'OP 1',vid:'cZ7zQbMxm28'},
+  {id:'cg2',title:'Kaidoku Funou',anime:'Code Geass',ep:'OP 2',vid:'3Sl4hEAQ_4Y'},
+  {id:'cg3',title:'O2',anime:'Code Geass R2',ep:'OP 1',vid:'jWRGqT9ZPCM'},
+  {id:'jba1',title:'Sono Chi no Sadame',anime:'JoJo\'s Bizarre Adventure',ep:'OP 1',vid:'2UPqwbWyGYw'},
+  {id:'jba2',title:'BLOODY STREAM',anime:'JoJo\'s Bizarre Adventure',ep:'OP 2',vid:'h7SBBBNRC4A'},
+  {id:'jba3',title:'Stand Proud',anime:'JoJo\'s Bizarre Adventure',ep:'OP 3',vid:'f5PNbrPPIBI'},
+  {id:'jba4',title:'Crazy Noisy Bizarre Town',anime:'JoJo\'s Bizarre Adventure',ep:'OP 4',vid:'0vNVdUUMNQ0'},
+  {id:'jba5',title:'Fighting Gold',anime:'JoJo\'s Bizarre Adventure',ep:'OP 5',vid:'3KoEqNx7R0M'},
+  {id:'ds1',title:'Gurenge',anime:'Demon Slayer',ep:'OP 1',vid:'tGkHwD08kUM'},
+  {id:'ds2',title:'Akeboshi',anime:'Demon Slayer',ep:'OP 2',vid:'bXK4V7zxrBs'},
+  {id:'ds3',title:'Kizuna no Kiseki',anime:'Demon Slayer',ep:'OP 3',vid:'6e83PFFM8OM'},
+  {id:'hxh1',title:'Departure!',anime:'Hunter x Hunter',ep:'OP 1',vid:'t1XJFTHZdqs'},
+  {id:'cw1',title:'COWBOY BEBOP OP',anime:'Cowboy Bebop',ep:'OP 1',vid:'EL-D9LrFJd4'},
+  {id:'ng1',title:'Cruel Angel\'s Thesis',anime:'Neon Genesis Evangelion',ep:'OP 1',vid:'Bs-XOcV2bao'},
+  {id:'sao1',title:'crossing field',anime:'Sword Art Online',ep:'OP 1',vid:'gM-ogAPgvKQ'},
+  {id:'sp1',title:'Tank!',anime:'Steins;Gate',ep:'OP',vid:'d3hSudz7WS4'},
+  {id:'sg1',title:'Hacking to the Gate',anime:'Steins;Gate',ep:'OP 1',vid:'kFCMBi1RVFI'},
+  {id:'bds1',title:'Kiroro',anime:'Black Clover',ep:'OP 10',vid:'IXi1EmVvzr0'},
+  {id:'vnd1',title:'THE HERO',anime:'One Punch Man',ep:'OP 1',vid:'lZ4HBxZ5oQE'},
+  {id:'re1',title:'Unravel (Re:Zero)',anime:'Re:Zero',ep:'OP 1',vid:'bQbGrOPNjE8'},
+  {id:'vb1',title:'Vinland Saga OP',anime:'Vinland Saga',ep:'OP 1',vid:'yI5BFuGgXFs'},
+  {id:'ter1',title:'Trigger',anime:'Terror in Resonance',ep:'OP 1',vid:'wM9Zor94YI4'},
+  {id:'kny1',title:'Zankyou Sanka',anime:'Demon Slayer S3',ep:'OP',vid:'jCCB_CvHXjM'},
+  {id:'bc1',title:'Black Clover OP 1',anime:'Black Clover',ep:'OP 1',vid:'MhUl4POB6-o'},
+  {id:'dr1',title:'Mr. Taxi (Danganronpa)',anime:'Fullmetal Alchemist 2003',ep:'OP 2',vid:'nL3kGtfOkDQ'},
+  {id:'mob1',title:'99',anime:'Mob Psycho 100',ep:'OP 1',vid:'Bw-5Lpz7wA4'},
+  {id:'jk1',title:'GRAND BLUE',anime:'Jujutsu Kaisen S2',ep:'OP',vid:'2T_jCGYFjdM'},
+  {id:'spy1',title:'Mixed Nuts',anime:'Spy × Family',ep:'OP 1',vid:'OVRkewDxFCE'},
 ];
 
 const K = 32;
@@ -141,16 +236,19 @@ function shuffle(arr) {
   return a;
 }
 
+// Dynamically creates battles scaled exactly to how long your list is
 function makePairs() {
   const shuffled = shuffle(openings);
   const ps = [];
-  // Ensure every OP gets at least one match
+  
+  // Round 1: Pair up everything so everyone fights at least once
   for (let i = 0; i < shuffled.length - 1; i += 2) {
     ps.push([shuffled[i], shuffled[i+1]]);
   }
-  // Add a few more random matchups for better data
+  
+  // Round 2: Re-shuffle and add another round to cross-pollinate rankings properly
   const roundTwo = shuffle(openings);
-  for (let i = 0; i < Math.min(10, roundTwo.length - 1); i += 2) {
+  for (let i = 0; i < roundTwo.length - 1; i += 2) {
     ps.push([roundTwo[i], roundTwo[i+1]]);
   }
   return ps;
@@ -166,7 +264,25 @@ function updateELO(winnerId, loserId) {
 }
 
 function ytEmbed(vid) {
-  return `<div class="yt-wrap"><iframe src="https://www.youtube.com/embed/${vid}?autoplay=0&rel=0&showinfo=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+  return `<div class="yt-wrap"><iframe src="https://www.youtube.com/embed/${vid}?autoplay=0&rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+}
+
+function getAnimeColor(anime) {
+  const colors = {
+    'Naruto':'#E8834A','Naruto Shippuden':'#D85A30','Death Note':'#ff4a4a',
+    'My Hero Academia':'#4CAF82','One Piece':'#2196F3','Dandadan':'#E91E63',
+    'Tokyo Ghoul':'#9C27B0','Tokyo Revengers':'#FF5722','Dragon Ball Super':'#FFC107',
+    'Fullmetal Alchemist':'#795548','FMA Brotherhood':'#A0522D','Jujutsu Kaisen':'#1B5E20',
+    'Jujutsu Kaisen S2':'#388E3C','Chainsaw Man':'#B71C1C','Attack on Titan':'#37474F',
+    '86 Eighty Six':'#546E7A','Psycho-Pass':'#1565C0','Monster':'#8B4513',
+    'Code Geass':'#ba55d3','JoJo\'s Bizarre Adventure':'#6A1B9A','Demon Slayer':'#C62828',
+    'Demon Slayer S3':'#AD1457','Hunter x Hunter':'#1A237E','Cowboy Bebop':'#BF360C',
+    'Neon Genesis Evangelion':'#4A148C','Sword Art Online':'#1B5E20','Steins;Gate':'#E65100',
+    'One Punch Man':'#F9A825','Re:Zero':'#0D47A1','Vinland Saga':'#3E2723',
+    'Terror in Resonance':'#5f9ea0','Black Clover':'#1B5E20','Mob Psycho 100':'#E91E63',
+    'Spy × Family':'#BF360C',
+  };
+  return colors[anime] || '#66fcf1';
 }
 
 function render() {
@@ -175,14 +291,13 @@ function render() {
     app.innerHTML = `
       <div class="header">
         <h1>Anime Opening Battle</h1>
-        <p>${openings.length} Premium Openings · ELO Ranking System</p>
+        <p>${openings.length} openings · ELO ranking system</p>
       </div>
       <div class="intro">
-        <div style="font-size:54px;margin-bottom:20px;text-shadow:var(--glow);">⚔️</div>
+        <div style="font-size:54px;margin-bottom:16px;text-shadow:var(--glow);">⚔️</div>
         <h2>Which opening reigns supreme?</h2>
-        <p>Two openings go head-to-head. Click the one you prefer.<br>After all battles, discover your ultimate ranking.</p>
-        <button class="start-btn" onclick="startBattle()">Start Battle Sequence</button>
-        <p style="margin-top:20px;font-size:12px;color:var(--text-muted);opacity:0.7;">${pairs.length || 13} matchups total</p>
+        <p>Two openings go head-to-head. Click the one you prefer.<br>After all battles, see the ultimate ranking.</p>
+        <button class="start-btn" onclick="startBattle()" style="margin-top:24px">Start the battles</button>
       </div>`;
     return;
   }
@@ -198,33 +313,31 @@ function render() {
   app.innerHTML = `
     <div class="header">
       <h1>Anime Opening Battle</h1>
-      <p>Match ${pairIdx + 1} of ${pairs.length}</p>
+      <p>Match ${pairIdx + 1} of ${pairs.length} · ELO ranking</p>
     </div>
     <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${prog}%"></div></div>
-    
+    <div style="font-size: 13px; color: var(--text-muted); text-align:center; margin-bottom:12px; font-weight:500; text-transform:uppercase; letter-spacing:1px;">Select your preference</div>
     <div class="battle-grid">
       <div class="card" id="card-a">
         ${ytEmbed(a.vid)}
         <div class="card-info">
           <div class="card-title">${a.title}</div>
-          <div class="card-sub" style="color:${a.color}">${a.anime} · ${a.ep}</div>
-          <button class="vote-btn" onclick="vote('a')">Vote ${a.title}</button>
+          <div class="card-sub" style="color:${getAnimeColor(a.anime)}">${a.anime} · ${a.ep}</div>
+          <button class="vote-btn" onclick="vote('a')">Pick This One</button>
         </div>
       </div>
-      
       <div class="vs-badge">VS</div>
-      
       <div class="card" id="card-b">
         ${ytEmbed(b.vid)}
         <div class="card-info">
           <div class="card-title">${b.title}</div>
-          <div class="card-sub" style="color:${b.color}">${b.anime} · ${b.ep}</div>
-          <button class="vote-btn" onclick="vote('b')">Vote ${b.title}</button>
+          <div class="card-sub" style="color:${getAnimeColor(b.anime)}">${b.anime} · ${b.ep}</div>
+          <button class="vote-btn" onclick="vote('b')">Pick This One</button>
         </div>
       </div>
     </div>
     <div class="skip-row">
-      <button class="skip-btn" onclick="vote('skip')">I can't decide (Skip Match)</button>
+      <button class="skip-btn" onclick="vote('skip')">Skip this match</button>
     </div>`;
 }
 
@@ -259,16 +372,15 @@ function renderRankings() {
   let rows = '';
   sorted.forEach((o, i) => {
     const elo = ratings[o.id];
-    const barWidth = Math.round(((elo - minElo) / range) * 100) || 5; 
+    const barWidth = Math.round(((elo - minElo) / range) * 100) || 5;
     const mc = i < 3 ? `rank-item ${rowClass[i]}` : 'rank-item';
     const medal = i < 3 ? `<span class="medal">${medals[i]}</span>` : `<span class="rank-num">#${i+1}</span>`;
-    
     rows += `
       <div class="${mc}">
         ${medal}
         <div class="rank-info">
           <div class="rank-title">${o.title}</div>
-          <div class="rank-sub" style="color:${o.color}">${o.anime} · ${o.ep}</div>
+          <div class="rank-sub" style="color:${getAnimeColor(o.anime)}">${o.anime} · ${o.ep}</div>
           <div class="elo-bar-wrap"><div class="elo-bar" style="width:${barWidth}%"></div></div>
         </div>
         <div class="rank-score">${elo}</div>
@@ -277,18 +389,15 @@ function renderRankings() {
 
   const winner = sorted[0];
   document.getElementById('app').innerHTML = `
-    <div class="header">
-      <h1>Final Rankings</h1>
-      <p>Determined by ELO Matchmaking</p>
-    </div>
+    <div class="header"><h1>Final Rankings</h1><p>Based on ${pairs.length} battles · ELO scores</p></div>
     <div class="winner-banner">
       <div class="big">👑</div>
       <h2>${winner.title}</h2>
-      <p style="color:${winner.color}; font-weight:600; font-size:16px;">${winner.anime}</p>
-      <p>Is the undisputed champion!</p>
+      <p style="color:${getAnimeColor(winner.anime)}; font-weight:600;">${winner.anime}</p>
+      <p>is your #1 anime opening!</p>
     </div>
     <div class="rankings">${rows}</div>
-    <button class="restart-btn" onclick="resetAll()">↺ Start New Tier List</button>`;
+    <button class="restart-btn" onclick="resetAll()">↺ Start new battle</button>`;
 }
 
 function resetAll() {
