@@ -430,8 +430,8 @@ body{
 .crt-rear::before{content:'';position:absolute;inset:-5%;border-radius:30px;transform:translateZ(44px);background:linear-gradient(160deg,#6b5441,#241b14)}
 .crt-front{position:relative;padding:14px 14px 9px;border-radius:26px;background:linear-gradient(145deg,#e9c69f 0%,#a37a55 12%,#5b4130 28%,#2a1f17 55%,#7d5c42 86%,#d8aa7e 100%);box-shadow:0 20px 30px rgba(0,0,0,.42),inset 0 2px 2px rgba(255,240,215,.7),inset 0 -5px 10px rgba(0,0,0,.6),inset 0 0 0 1px rgba(0,0,0,.5)}
 .crt-shadow{position:absolute;left:6%;right:6%;bottom:-20px;height:20px;background:radial-gradient(ellipse,rgba(0,0,0,.6),transparent 70%);filter:blur(4px)}
-.crt-screen{position:relative;isolation:isolate;overflow:hidden;min-height:244px;padding:13px 12px 10px;border-radius:22px/20px;background:radial-gradient(ellipse at 50% 42%,#16323f 0%,#0a1d28 56%,#040c11 100%);box-shadow:inset 0 0 0 3px #090705,inset 0 0 26px 6px rgba(0,0,0,.95),0 0 0 3px rgba(0,0,0,.55),0 1px 0 4px rgba(255,230,195,.25);animation:crtOn .9s ease-out}
-@keyframes crtOn{0%{transform:scale(.6,.01);filter:brightness(4)}60%{transform:scale(1,.03);filter:brightness(3)}100%{transform:none;filter:none}}
+.crt-screen{position:relative;isolation:isolate;overflow:hidden;min-height:244px;padding:13px 12px 10px;border-radius:22px/20px;background:radial-gradient(ellipse at 50% 42%,#16323f 0%,#0a1d28 56%,#040c11 100%);box-shadow:inset 0 0 0 3px #090705,inset 0 0 26px 6px rgba(0,0,0,.95),0 0 0 3px rgba(0,0,0,.55),0 1px 0 4px rgba(255,230,195,.25);animation:none}
+
 .crt-scene{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
 .crt-stars{position:absolute;inset:0;opacity:.7;background-image:radial-gradient(1px 1px at 20% 30%,#9fe0ff,transparent),radial-gradient(1px 1px at 70% 60%,#fff,transparent),radial-gradient(1.5px 1.5px at 45% 82%,#ffd9a0,transparent),radial-gradient(1px 1px at 86% 18%,#9fe0ff,transparent);background-size:140px 120px;animation:starDrift 40s linear infinite,twinkle 3s ease-in-out infinite}
 @keyframes starDrift{to{background-position:-140px 120px}}
@@ -1110,7 +1110,7 @@ body.theme-coffee:not(.layout-arch) .circuit-mini{color:#a99aff;opacity:.16}
     0 0 0 2px rgba(0,0,0,.82),
     0 1px 0 4px rgba(191,220,247,.12),
     0 0 22px rgba(53,170,255,.11);
-  animation:crtOn .9s ease-out;
+  animation:none;
 }
 .crt-screen::before{
   content:"";position:absolute;inset:0;z-index:6;pointer-events:none;border-radius:inherit;
@@ -1213,6 +1213,163 @@ body.theme-coffee:not(.layout-arch) .circuit-mini{color:#a99aff;opacity:.16}
 }
 @media(prefers-reduced-motion:reduce){
   .crt-float,.crt-monitor *,.crt-ant,.theme-btn{animation:none!important;transition:none!important}
+}
+
+/* ================================================================
+   CRT STABILITY PATCH (cross-browser)
+   Keep the glass and timer in normal flow. Avoid transform animations on
+   the screen, monitor, and timer core: layered 3D transforms can glitch
+   during refresh/compositing in some browsers. Keep the CRT styling in its
+   gradients, bevels, phosphor glow, scanlines, and scene details.
+   ================================================================ */
+.crt-stage{perspective:none!important}
+.crt-float{
+  animation:none!important;
+  transform:none!important;
+  filter:drop-shadow(0 20px 24px rgba(0,0,0,.22));
+}
+.crt-monitor{
+  transform:none!important;
+  transform-style:flat!important;
+  will-change:auto!important;
+}
+.crt-front{
+  position:relative!important;display:block!important;width:100%!important;
+  min-width:0!important;transform:none!important;
+}
+.crt-screen{
+  position:relative!important;display:block!important;width:100%!important;
+  height:auto!important;min-height:248px!important;visibility:visible!important;
+  opacity:1!important;transform:none!important;transform-style:flat!important;
+  animation:none!important;
+}
+.crt-display{
+  position:relative!important;display:block!important;width:min(100%,220px)!important;
+  min-width:0!important;height:auto!important;aspect-ratio:1 / 1!important;
+  margin:0 auto!important;transform:none!important;perspective:none!important;
+}
+.crt-progress-svg{display:block!important;width:100%!important;height:100%!important}
+.crt-timer-core{
+  position:absolute!important;inset:0!important;display:flex!important;
+  visibility:visible!important;opacity:1!important;transform:none!important;
+  transform-style:flat!important;
+}
+.crt-timer-core .timer-main,.crt-timer-core .timer-sub{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  transform:none!important;
+}
+.crt-timer-core .timer-main{animation:none!important}
+.crt-ant{animation:none!important}
+@media(max-width:430px){
+  .crt-screen{min-height:218px!important}
+  .crt-display{width:min(100%,204px)!important}
+}
+@media(max-width:340px){
+  .crt-screen{min-height:205px!important}
+  .crt-display{width:min(100%,188px)!important}
+}
+@media(prefers-reduced-motion:reduce){
+  .crt-screen,.crt-float,.crt-monitor,.crt-timer-core,.crt-timer-core .timer-main{
+    animation:none!important;transition:none!important;transform:none!important;filter:none!important
+  }
+}
+
+
+/* ================================================================
+   SAFARI / WEBKIT COMPOSITING FIX
+   Safari can mis-order descendants in nested preserve-3d scenes. The CRT
+   is decorative, so keep its depth with 2D layers, gradients and shadows
+   rather than translateZ() stacking. Explicit heights also avoid relying
+   on aspect-ratio for a box whose children are absolutely positioned.
+   ================================================================ */
+.crt-stage,
+.crt-float,
+.crt-monitor,
+.crt-rear,
+.crt-front,
+.crt-screen,
+.crt-display,
+.crt-timer-core {
+  -webkit-transform-style: flat !important;
+  transform-style: flat !important;
+}
+.crt-stage,
+.crt-float,
+.crt-monitor,
+.crt-rear,
+.crt-rear::before,
+.crt-front,
+.crt-screen,
+.crt-display,
+.crt-timer-core,
+.crt-base {
+  -webkit-transform: none !important;
+  transform: none !important;
+}
+.crt-monitor {
+  position: relative !important;
+  z-index: 1 !important;
+  isolation: auto !important;
+}
+.crt-rear {
+  z-index: 0 !important;
+}
+.crt-front {
+  position: relative !important;
+  z-index: 2 !important;
+}
+.crt-screen {
+  isolation: auto !important;
+  position: relative !important;
+  z-index: 0 !important;
+}
+.crt-front::before { z-index: 10; }
+.crt-screen .crt-scene { z-index: 1; }
+.crt-screen .crt-readout,
+.crt-screen .crt-footer-line { position: relative; z-index: 5; }
+.crt-screen .crt-display { z-index: 4; }
+.crt-screen .crt-glass { z-index: 8; }
+.crt-ant {
+  -webkit-transform: rotate(var(--a)) !important;
+  transform: rotate(var(--a)) !important;
+  z-index: 1 !important;
+}
+.crt-base { z-index: 3 !important; }
+.crt-display {
+  width: min(100%, 220px) !important;
+  max-width: 100% !important;
+  height: 220px !important;
+  aspect-ratio: auto !important;
+  margin: 0 auto !important;
+}
+.crt-progress-svg {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  -webkit-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+}
+.crt-timer-core {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+.crt-timer-core .timer-main,
+.crt-timer-core .timer-sub {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  -webkit-transform: none !important;
+  transform: none !important;
+}
+.crt-timer-core .timer-main { animation: none !important; }
+@media (max-width: 430px) {
+  .crt-display { width: min(100%, 204px) !important; height: 204px !important; }
+}
+@media (max-width: 340px) {
+  .crt-display { width: min(100%, 188px) !important; height: 188px !important; }
 }
 
 </style>
@@ -1949,6 +2106,8 @@ function applyCustomPreset(){
 // ── TIMER ──
 function fmt(s){return`${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`}
 function updateUI(){
+  const crtMonitor=$('crt-monitor');
+  if(crtMonitor){crtMonitor.dataset.run=isRunning?'1':'0';crtMonitor.dataset.mode=isFocus?'focus':'break';}
   $('timer-display').textContent=fmt(remaining);
   const total=isFocus?FOCUS:BREAK,pct=total>0?Math.max(0,Math.min(1,remaining/total)):0;
   $('bar-fill').style.width=(pct*100)+'%';
@@ -2165,23 +2324,14 @@ applyLanguage();
 $('status').textContent=t('statusReady');
 updateUI();updateStats();
 
-// ── 3D CRT life ──
+// ── CRT scene initialization (stable; no continuous 3D transform loop) ──
 (function(){
-  const st=$('crt-stage'),mo=$('crt-monitor');if(!st||!mo)return;
+  const mo=$('crt-monitor');
+  if(!mo)return;
   const hex=()=>{let o='';for(let i=0;i<40;i++){o+=[0,0,0].map(()=>Math.floor(Math.random()*256).toString(16).padStart(2,'0')).join(' ')+'\n';}return o;};
-  ['crt-data-l','crt-data-r'].forEach(id=>{const g=hex();$(id).innerHTML='<i>'+g+g+'</i>';});
-  let tx=0,ty=0,cx=0,cy=0,over=false;
-  const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
-  st.addEventListener('pointermove',e=>{const r=st.getBoundingClientRect();tx=(e.clientX-r.left)/r.width-.5;ty=(e.clientY-r.top)/r.height-.5;over=true;});
-  st.addEventListener('pointerleave',()=>{over=false;});
-  (function loop(t){
-    const gx=over?tx:(calm?0:Math.sin(t/2300)*.12),gy=over?ty:(calm?0:Math.cos(t/3100)*.1);
-    cx+=(gx-cx)*.08;cy+=(gy-cy)*.08;
-    mo.style.setProperty('--ry',(cx*18).toFixed(2)+'deg');mo.style.setProperty('--rx',(-cy*12).toFixed(2)+'deg');
-    mo.style.setProperty('--sx',(-cx*3).toFixed(2));mo.style.setProperty('--sy',(-cy*3).toFixed(2));
-    requestAnimationFrame(loop);
-  })(0);
-  setInterval(()=>{mo.dataset.run=isRunning?'1':'0';mo.dataset.mode=isFocus?'focus':'break';},400);
+  ['crt-data-l','crt-data-r'].forEach(id=>{const el=$(id);if(el){const g=hex();el.innerHTML='<i>'+g+g+'</i>';}});
+  mo.dataset.run=isRunning?'1':'0';
+  mo.dataset.mode=isFocus?'focus':'break';
 })();
 </script>
 </body>
