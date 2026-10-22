@@ -76,11 +76,6 @@ No install needed.
 > ```
 > then visit `http://localhost:8000`.
 
-**On GitHub Pages**
-1. Push `index.html` (and the favicon files) to your repo.
-2. Go to **Settings → Pages**, choose your branch and the root folder, and save.
-3. Your site will be live at `https://klooolop.github.io/focus-kitty-Pomodoro/`.
-
 ---
 
 ## 🧩 Customising
