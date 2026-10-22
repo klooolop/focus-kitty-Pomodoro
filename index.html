@@ -475,11 +475,8 @@ body{
 .crt-knob{width:13px;height:13px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d9b48c,#5a3f2a 60%,#1f150e);box-shadow:0 2px 3px rgba(0,0,0,.6),inset 0 0 0 1px rgba(0,0,0,.4)}
 .crt-knob:first-of-type{margin-left:auto}
 .crt-grille{width:46px;height:11px;border-radius:3px;background:repeating-linear-gradient(90deg,rgba(0,0,0,.65) 0 2px,transparent 2px 5px);box-shadow:0 1px 0 rgba(255,230,195,.35)}
-body.layout-arch .crt-front{border-radius:6px;background:linear-gradient(145deg,#244336,#07150e 24%,#020805 72%,#1d5039)}
-body.layout-arch .crt-screen{border-radius:3px;background:radial-gradient(ellipse at center,#092d32,#020a0b 82%)}
-body.layout-arch .crt-readout{color:var(--green)}
-body.layout-arch .crt-timer-core .timer-main{color:#d3f3ff;text-shadow:0 0 12px rgba(0,200,255,.35)}
-body.layout-arch .crt-timer-core .timer-sub{color:var(--text2)}
+body.layout-arch .crt-front{border-radius:6px}
+body.layout-arch .crt-screen{border-radius:3px}
 .crt-ant{position:absolute;bottom:92%;width:3px;height:62px;border-radius:2px;background:linear-gradient(90deg,#d8c4a8,#6d5a46 60%,#2a2018);transform-origin:50% 100%;transform:translateZ(-30px) rotate(var(--a));animation:antSway 6s ease-in-out infinite}
 .crt-ant::after{content:'';position:absolute;top:-3px;left:-1.5px;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#c9a77c)}
 .crt-ant.a1{left:40%;--a:-30deg}.crt-ant.a2{left:56%;--a:26deg;animation-delay:-3s}
@@ -1372,6 +1369,121 @@ body.theme-coffee:not(.layout-arch) .circuit-mini{color:#a99aff;opacity:.16}
   .crt-display { width: min(100%, 188px) !important; height: 188px !important; }
 }
 
+
+/* ================================================================
+   CRT THEME SYNC — the monitor follows the active UI theme.
+   Every CRT colour comes from the --crt-* variables below, which are set
+   per theme (default / dark / bw / black / coffee) and for the Arch UI.
+   a = main phosphor glow, b = secondary glow (break mode, LED, scope),
+   t = timer digits, tb = timer digits in break mode (all R,G,B triples).
+   ================================================================ */
+:root{
+  --crt-a:255,128,64;--crt-b:24,190,175;--crt-t:255,226,176;--crt-tb:214,255,240;
+  --crt-front:linear-gradient(155deg,#fbe7c8 0%,#efc994 12%,#d49a62 40%,#b97b45 70%,#8c5628 90%,#e8b57e 100%);--crt-rear:linear-gradient(145deg,#d9a46c,#8d5a2e 40%,#5a3418 100%);--crt-edge:linear-gradient(150deg,#f0c590,#c68750 30%,#7a4a22 70%,#d9a06a);--crt-base:linear-gradient(#c78a52,#7b4a22 50%,#4a2a12);
+  --crt-ant:linear-gradient(90deg,#c9a77c,#fbe7c8 45%,#8a6038 80%,#3a2412);--crt-ant-tip:radial-gradient(circle at 35% 30%,#fff,#ff9a5c 58%,#a4501f);--crt-scr:radial-gradient(ellipse at 50% 42%,#3a1d0e 0%,#1f0e05 52%,#0d0502 100%);--crt-scr-break:radial-gradient(ellipse at 50% 42%,#0b3030 0%,#051c1e 52%,#020b0c 100%);
+  --crt-hi:rgba(255,245,225,.65);--crt-lip:rgba(255,240,220,.4);--crt-brand:rgba(70,36,12,.85);--crt-brand-sh:0 1px 0 rgba(255,235,205,.5);
+  --crt-knob:radial-gradient(circle at 33% 28%,#fff0d8,#c89460 28%,#7a4a22 58%,#2a1608 76%);--crt-grille:repeating-linear-gradient(90deg,rgba(40,18,6,.85) 0 2px,rgba(255,225,185,.4) 2px 3px,transparent 3px 5px);--crt-screw:#2a1608 0 1.7px,#f3d3a5 2px 2.7px,#a8763f 3px 3.5px;
+}
+body.theme-dark{
+  --crt-a:255,150,80;--crt-b:130,210,170;--crt-t:255,222,184;--crt-tb:216,255,236;
+  --crt-front:linear-gradient(155deg,#6a4330 0%,#3f2518 12%,#26150c 40%,#180d07 70%,#4d2f1e 100%);--crt-rear:linear-gradient(145deg,#3a2216,#1c0f08 40%,#0b0503 100%);--crt-edge:linear-gradient(150deg,#5a3926,#2e1a10 40%,#120a05 75%,#43291a);--crt-base:linear-gradient(#3d2518,#1a0e07 50%,#0a0503);
+  --crt-ant:linear-gradient(90deg,#7d5a40,#e0b88f 45%,#523521 80%,#1a0e07);--crt-ant-tip:radial-gradient(circle at 35% 30%,#fff,#ffa466 58%,#6a3414);--crt-scr:radial-gradient(ellipse at 50% 42%,#2a150b 0%,#140a05 52%,#070302 100%);--crt-scr-break:radial-gradient(ellipse at 50% 42%,#0d2b25 0%,#071a17 52%,#030b0a 100%);
+  --crt-hi:rgba(255,215,175,.3);--crt-lip:rgba(255,200,150,.14);--crt-brand:#c9a07a;--crt-brand-sh:0 1px 0 rgba(0,0,0,.55);
+  --crt-knob:radial-gradient(circle at 33% 28%,#f5d9b8,#a8754a 28%,#4a2c18 58%,#120904 76%);--crt-grille:repeating-linear-gradient(90deg,rgba(0,0,0,.85) 0 2px,rgba(255,190,140,.22) 2px 3px,transparent 3px 5px);--crt-screw:#0a0503 0 1.7px,#b88a60 2px 2.7px,#3a2314 3px 3.5px;
+}
+body.theme-bw{
+  --crt-a:235,235,235;--crt-b:190,190,190;--crt-t:255,255,255;--crt-tb:232,232,232;
+  --crt-front:linear-gradient(155deg,#f6f6f6 0%,#dcdcdc 12%,#b9b9b9 40%,#8f8f8f 70%,#d2d2d2 100%);--crt-rear:linear-gradient(145deg,#bdbdbd,#7a7a7a 40%,#4a4a4a 100%);--crt-edge:linear-gradient(150deg,#e6e6e6,#a8a8a8 30%,#666 70%,#c8c8c8);--crt-base:linear-gradient(#a8a8a8,#6a6a6a 50%,#3c3c3c);
+  --crt-ant:linear-gradient(90deg,#aaa,#f4f4f4 45%,#777 80%,#333);--crt-ant-tip:radial-gradient(circle at 35% 30%,#fff,#bbb 58%,#555);--crt-scr:radial-gradient(ellipse at 50% 42%,#2b2b2b 0%,#141414 52%,#060606 100%);--crt-scr-break:radial-gradient(ellipse at 50% 42%,#222 0%,#101010 52%,#040404 100%);
+  --crt-hi:rgba(255,255,255,.7);--crt-lip:rgba(255,255,255,.45);--crt-brand:rgba(30,30,30,.8);--crt-brand-sh:0 1px 0 rgba(255,255,255,.5);
+  --crt-knob:radial-gradient(circle at 33% 28%,#fff,#bdbdbd 28%,#666 58%,#222 76%);--crt-grille:repeating-linear-gradient(90deg,rgba(20,20,20,.85) 0 2px,rgba(255,255,255,.4) 2px 3px,transparent 3px 5px);--crt-screw:#111 0 1.7px,#e6e6e6 2px 2.7px,#888 3px 3.5px;
+}
+body.theme-black{
+  --crt-a:255,255,255;--crt-b:160,160,160;--crt-t:255,255,255;--crt-tb:225,225,225;
+  --crt-front:linear-gradient(155deg,#343434 0%,#1a1a1a 12%,#0e0e0e 45%,#060606 75%,#262626 100%);--crt-rear:linear-gradient(145deg,#1a1a1a,#0a0a0a 40%,#000 100%);--crt-edge:linear-gradient(150deg,#2c2c2c,#121212 40%,#050505 75%,#1e1e1e);--crt-base:linear-gradient(#262626,#0c0c0c 50%,#000);
+  --crt-ant:linear-gradient(90deg,#555,#ddd 45%,#333 80%,#000);--crt-ant-tip:radial-gradient(circle at 35% 30%,#fff,#aaa 58%,#333);--crt-scr:radial-gradient(ellipse at 50% 42%,#0d0d0d 0%,#050505 52%,#000 100%);--crt-scr-break:radial-gradient(ellipse at 50% 42%,#0a0a0a 0%,#040404 52%,#000 100%);
+  --crt-hi:rgba(255,255,255,.22);--crt-lip:rgba(255,255,255,.1);--crt-brand:#8a8a8a;--crt-brand-sh:0 1px 0 rgba(0,0,0,.6);
+  --crt-knob:radial-gradient(circle at 33% 28%,#eee,#777 28%,#2a2a2a 58%,#050505 76%);--crt-grille:repeating-linear-gradient(90deg,rgba(0,0,0,.9) 0 2px,rgba(255,255,255,.18) 2px 3px,transparent 3px 5px);--crt-screw:#000 0 1.7px,#888 2px 2.7px,#222 3px 3.5px;
+}
+body.theme-coffee{
+  --crt-a:223,163,101;--crt-b:143,200,163;--crt-t:255,230,190;--crt-tb:222,250,228;
+  --crt-front:linear-gradient(155deg,#7a5640 0%,#4a3221 10%,#2d1e14 38%,#1b120c 70%,#5d402c 100%);--crt-rear:linear-gradient(145deg,#3e2b1e,#1d130c 40%,#0b0705 100%);--crt-edge:linear-gradient(150deg,#6a4b36,#33221a 40%,#130c08 75%,#4a3324);--crt-base:linear-gradient(#43301f,#1a110a 50%,#0a0604);
+  --crt-ant:linear-gradient(90deg,#8a6a4c,#e6c9a2 45%,#5a3d28 80%,#1a110a);--crt-ant-tip:radial-gradient(circle at 35% 30%,#fff3e0,#dfa365 58%,#6b4421);--crt-scr:radial-gradient(ellipse at 50% 42%,#24160d 0%,#120b06 52%,#060302 100%);--crt-scr-break:radial-gradient(ellipse at 50% 42%,#14231a 0%,#0b1510 52%,#040806 100%);
+  --crt-hi:rgba(255,225,190,.32);--crt-lip:rgba(255,225,190,.14);--crt-brand:#b99673;--crt-brand-sh:0 1px 0 rgba(0,0,0,.55);
+  --crt-knob:radial-gradient(circle at 33% 28%,#f2d8b6,#a67b52 28%,#4a3020 58%,#140c07 76%);--crt-grille:repeating-linear-gradient(90deg,rgba(0,0,0,.85) 0 2px,rgba(223,163,101,.22) 2px 3px,transparent 3px 5px);--crt-screw:#0b0705 0 1.7px,#b89168 2px 2.7px,#3a2616 3px 3.5px;
+}
+body.layout-arch{
+  --crt-a:0,255,136;--crt-b:0,200,255;--crt-t:211,243,255;--crt-tb:211,243,255;
+  --crt-front:linear-gradient(145deg,#244336,#07150e 24%,#020805 72%,#1d5039);--crt-rear:linear-gradient(145deg,#122a20,#04100a 40%,#010503 100%);--crt-edge:linear-gradient(150deg,#1d5039,#0a1f15 40%,#020805 75%,#17402e);--crt-base:linear-gradient(#183a2a,#06140d 50%,#020805);
+  --crt-ant:linear-gradient(90deg,#3f6a55,#bff5d8 45%,#1d4733 80%,#04100a);--crt-ant-tip:radial-gradient(circle at 35% 30%,#fff,#00ff88 58%,#06402a);--crt-scr:radial-gradient(ellipse at center,#092d32,#020a0b 82%);--crt-scr-break:radial-gradient(ellipse at center,#06222c,#02080b 82%);
+  --crt-hi:rgba(160,255,210,.3);--crt-lip:rgba(160,255,210,.14);--crt-brand:#7fd9ae;--crt-brand-sh:0 1px 0 rgba(0,0,0,.55);
+  --crt-knob:radial-gradient(circle at 33% 28%,#d8ffe9,#4f9a78 28%,#164030 58%,#04100a 76%);--crt-grille:repeating-linear-gradient(90deg,rgba(0,0,0,.9) 0 2px,rgba(0,255,136,.22) 2px 3px,transparent 3px 5px);--crt-screw:#020805 0 1.7px,#6fc9a0 2px 2.7px,#1d4733 3px 3.5px;
+}
+
+/* Break mode swaps the glow + digits to the theme's secondary colours */
+.crt-monitor[data-mode="break"]{--crt-a:var(--crt-b);--crt-t:var(--crt-tb)}
+
+.crt-rear{background:var(--crt-rear);box-shadow:inset 0 1px 0 var(--crt-hi),inset 0 -8px 18px rgba(0,0,0,.5),0 24px 40px rgba(0,0,0,.25)}
+.crt-rear::before{background:var(--crt-edge);box-shadow:inset 0 1px 1px var(--crt-hi),inset 0 -4px 8px rgba(0,0,0,.55)}
+.crt-front{
+  background:linear-gradient(135deg,rgba(255,255,255,.11),transparent 20%),var(--crt-front);
+  box-shadow:0 25px 38px rgba(0,0,0,.5),inset 0 2px 2px var(--crt-hi),inset 0 -5px 12px rgba(0,0,0,.7),inset 0 0 0 1px var(--crt-lip),0 0 0 1px rgba(0,0,0,.85);
+}
+body.layout-arch .crt-front{border-radius:6px}
+.crt-front::before{
+  background:
+    radial-gradient(circle at 13px 13px,var(--crt-screw),transparent 3.8px),
+    radial-gradient(circle at calc(100% - 13px) 13px,var(--crt-screw),transparent 3.8px),
+    radial-gradient(circle at 13px calc(100% - 13px),var(--crt-screw),transparent 3.8px),
+    radial-gradient(circle at calc(100% - 13px) calc(100% - 13px),var(--crt-screw),transparent 3.8px),
+    repeating-linear-gradient(112deg,rgba(255,255,255,.012) 0 1px,transparent 1px 4px);
+}
+.crt-screen{
+  background:var(--crt-scr);
+  box-shadow:inset 0 0 0 2px #050505,inset 0 0 0 4px rgba(var(--crt-a),.16),inset 0 0 28px 7px rgba(0,0,0,.95),0 0 0 2px rgba(0,0,0,.82),0 1px 0 4px var(--crt-lip),0 0 22px rgba(var(--crt-a),.12);
+}
+.crt-monitor[data-run="1"] .crt-screen{
+  box-shadow:inset 0 0 0 2px #050505,inset 0 0 0 4px rgba(var(--crt-a),.16),inset 0 0 30px 7px rgba(0,0,0,.95),0 0 0 2px rgba(0,0,0,.82),0 1px 0 4px var(--crt-lip),0 0 28px rgba(var(--crt-a),.22);
+}
+.crt-monitor[data-mode="break"] .crt-screen{background:var(--crt-scr-break)}
+body.layout-arch .crt-screen{border-radius:3px}
+.crt-screen::before{background:
+  linear-gradient(123deg,rgba(255,255,255,.12) 0%,rgba(255,255,255,.03) 14%,transparent 29%),
+  radial-gradient(ellipse 70% 25% at 50% 0%,rgba(var(--crt-a),.09),transparent 80%),
+  linear-gradient(180deg,transparent 70%,rgba(var(--crt-a),.03))}
+.crt-screen::after{box-shadow:inset 0 0 42px rgba(var(--crt-a),.14),inset 0 0 90px rgba(var(--crt-a),.05)}
+.crt-stars{background-image:
+  radial-gradient(1px 1px at 20% 30%,rgb(var(--crt-a)),transparent),
+  radial-gradient(1px 1px at 70% 60%,#fff,transparent),
+  radial-gradient(1.5px 1.5px at 45% 82%,rgb(var(--crt-t)),transparent),
+  radial-gradient(1px 1px at 86% 18%,rgb(var(--crt-a)),transparent)}
+.crt-roll{background:linear-gradient(transparent,rgba(var(--crt-a),.08),transparent)}
+.crt-tear{background:linear-gradient(transparent,rgba(var(--crt-t),.2),transparent)}
+.crt-data{color:rgba(var(--crt-b),.38)}
+.crt-cup{stroke:rgb(var(--crt-a));filter:drop-shadow(0 0 5px rgba(var(--crt-a),.55))}
+.crt-cup .steam{stroke:rgba(var(--crt-t),.8)}
+.crt-cat{fill:rgb(var(--crt-a));filter:drop-shadow(0 0 5px rgba(var(--crt-a),.5))}
+.crt-scope{stroke:rgba(var(--crt-b),.66);filter:drop-shadow(0 0 4px rgba(var(--crt-b),.7))}
+.crt-readout{color:rgba(var(--crt-t),.78);text-shadow:0 0 9px rgba(var(--crt-a),.35)}
+.crt-ticks{stroke:rgba(var(--crt-a),.42)}
+.crt-ring-track{stroke:rgba(var(--crt-a),.13)}
+.crt-ring-progress{stroke:rgb(var(--crt-a));filter:drop-shadow(0 0 4px rgba(var(--crt-a),.95)) drop-shadow(0 0 14px rgba(var(--crt-a),.6)) drop-shadow(0 0 28px rgba(var(--crt-a),.24))}
+.crt-timer-core .timer-main,.crt-monitor[data-mode="break"] .crt-timer-core .timer-main{
+  color:rgb(var(--crt-t));
+  text-shadow:0 0 1px rgba(255,255,255,.9),0 0 8px rgba(var(--crt-a),.9),0 0 21px rgba(var(--crt-a),.55),0 0 40px rgba(var(--crt-a),.25);
+}
+.crt-timer-core .timer-sub{color:rgba(var(--crt-t),.82);text-shadow:0 0 7px rgba(var(--crt-a),.25)}
+.crt-footer-line{color:rgba(var(--crt-t),.62)}
+.crt-footer-line .crt-live-dot{background:rgb(var(--crt-b));box-shadow:0 0 8px rgb(var(--crt-b))}
+.crt-led{background:rgb(var(--crt-a));box-shadow:0 0 8px rgb(var(--crt-a)),inset 0 -1px 1px rgba(0,0,0,.5)}
+.crt-monitor[data-run="1"] .crt-led{background:rgb(var(--crt-b));box-shadow:0 0 10px rgb(var(--crt-b)),inset 0 -1px 1px rgba(0,0,0,.5)}
+.crt-brand{color:var(--crt-brand);text-shadow:var(--crt-brand-sh)}
+.crt-knob{background:var(--crt-knob)}
+.crt-grille{background:var(--crt-grille)}
+.crt-base{background:var(--crt-base)}
+.crt-ant{background:var(--crt-ant)}
+.crt-ant::after{background:var(--crt-ant-tip)}
+
 </style>
 </head>
 <body class="theme-coffee">
@@ -1595,6 +1707,7 @@ body.theme-coffee:not(.layout-arch) .circuit-mini{color:#a99aff;opacity:.16}
       <div class="inp-row">
         <input class="inp" type="text" id="bg-url" placeholder="YouTube URL or live stream..." data-i18n-placeholder="bgPlaceholder"/>
         <button class="set-btn" onclick="applyBg()" data-i18n="load">Load</button>
+        <button class="set-btn" type="button" onclick="randomBg()" data-i18n="randBg" title="Random James Scholz study-with-me stream">🎲 Random</button>
       </div>
       <div class="tl" id="video-tl">
         <div class="tl-row">
@@ -1631,6 +1744,7 @@ body.theme-coffee:not(.layout-arch) .circuit-mini{color:#a99aff;opacity:.16}
     <div class="two-col">
       <div class="audio-panel">
         <div class="panel-lbl" data-i18n="youtubeSound">YouTube Sound</div>
+        <button class="btn" type="button" id="rain-btn" style="width:100%;font-size:.54rem" onclick="playRain()" data-i18n="rainBtn">🌧 Rain</button>
         <input class="inp" type="text" id="focus-url" placeholder="focus URL..." data-i18n-placeholder="focusUrlPlaceholder"/>
         <input class="inp" type="text" id="break-url" placeholder="break URL (opt.)" data-i18n-placeholder="breakUrlPlaceholder"/>
         <div class="sl-row" style="margin-top:4px">
@@ -1720,6 +1834,7 @@ let sessionHistory=[];
 let bgPlayer=null,pFocus=null,pBreak=null;
 let ytReady=false,bgId='',focusId='',breakId='';
 let pendingBgPlay=false,pendingFP=false,pendingBP=false;
+let bgPlaylist='',bgListIdx=0,bgErrCount=0;
 let isSeeking=false,bgIsLive=false,bgVolume=0;
 let tlInterval=null;
 let cinemaMode=false,bgUserPaused=false;
@@ -1740,7 +1855,7 @@ const I18N={
     classic:'Classic',deepWork:'Deep Work',ultradian:'Ultradian',custom:'Custom',focusBreakCaption:'focus / break',focusMinutes:'Focus (minutes)',breakMinutes:'Break (minutes)',applyCustom:'Apply custom times',
     backgroundVideo:'Background Video',audio:'Audio',youtubeSound:'YouTube Sound',spotify:'Spotify',alarm:'Alarm',alarmVolume:'Alarm Volume',testAlarm:'Test 🔔',
     statsHistory:'Stats & History',sessions:'Sessions',focusTime:'Focus Time',bestStreak:'Best Streak',history:'History',clear:'Clear',emptyHistory:'No sessions yet — start focusing! 🐱',
-    startWord:'Start',endWord:'End',load:'Load',apply:'Apply',dim:'Dim',volumeShort:'Vol',live:'LIVE',
+    startWord:'Start',endWord:'End',load:'Load',randBg:'🎲 Random',apply:'Apply',rainBtn:'🌧 Rain',rainToast:'Rain loaded 🌧',dim:'Dim',volumeShort:'Vol',live:'LIVE',
     compact:'Compact',normal:'Normal',full:'Full',bgPlaceholder:'YouTube URL or live stream...',focusUrlPlaceholder:'focus URL...',breakUrlPlaceholder:'break URL (opt.)',spotifyUrlPlaceholder:'Spotify URL...',
     playVideo:'▶ Play video',pauseVideo:'⏸ Pause video',zen:'Zen',exitZen:'Exit',showUI:'Show UI',archUI:'🏔️ Arch UI',kittyUI:'🐱 Kitty UI',
     footerHelp:'Space = timer · P = BG video · Zen = video only · Esc = exit Zen · R / S = reset / skip',
@@ -1763,7 +1878,7 @@ const I18N={
     classic:'クラシック',deepWork:'ディープワーク',ultradian:'ウルトラディアン',custom:'カスタム',focusBreakCaption:'集中 / 休憩',focusMinutes:'集中時間（分）',breakMinutes:'休憩時間（分）',applyCustom:'時間を適用',
     backgroundVideo:'背景動画',audio:'音声',youtubeSound:'YouTube 音声',spotify:'Spotify',alarm:'アラーム',alarmVolume:'アラーム音量',testAlarm:'テスト 🔔',
     statsHistory:'統計と履歴',sessions:'セッション数',focusTime:'集中時間',bestStreak:'最長連続記録',history:'履歴',clear:'クリア',emptyHistory:'まだセッションがありません。集中を始めましょう！ 🐱',
-    startWord:'開始',endWord:'終了',load:'読み込む',apply:'適用',dim:'暗さ',volumeShort:'音量',live:'ライブ',
+    startWord:'開始',endWord:'終了',load:'読み込む',randBg:'🎲 ランダム',apply:'適用',rainBtn:'🌧 雨音',rainToast:'雨音を読み込みました 🌧',dim:'暗さ',volumeShort:'音量',live:'ライブ',
     compact:'コンパクト',normal:'標準',full:'フル',bgPlaceholder:'YouTube URL またはライブ配信...',focusUrlPlaceholder:'集中用 URL...',breakUrlPlaceholder:'休憩用 URL（任意）',spotifyUrlPlaceholder:'Spotify URL...',
     playVideo:'▶ 動画を再生',pauseVideo:'⏸ 動画を一時停止',zen:'禅モード',exitZen:'終了',showUI:'UIを表示',archUI:'🏔️ Arch UI',kittyUI:'🐱 Kitty UI',
     footerHelp:'Space = タイマー · P = 背景動画 · Zen = 動画のみ · Esc = Zen終了 · R / S = リセット / スキップ',
@@ -1881,6 +1996,7 @@ function applyBg(){
   bgId=extractId(url);
   if(!bgId&&url){showToast(currentLang==='ja'?'YouTube URLを読み取れませんでした':'Could not read YouTube URL');return;}
   if(!bgId){clearBg();return;}
+  bgPlaylist='';
   bgIsLive=url.includes('/live/')||url.includes('live=1');
   destroyBg();
   $('bg-wrap').classList.remove('has-yt-bg');
@@ -1892,12 +2008,14 @@ function buildBgPlayer(){
   const vars={autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,
     showinfo:0,modestbranding:1,iv_load_policy:3,playsinline:1,
     origin:(location.origin&&location.origin!=='null')?location.origin:'http://localhost'};
-  if(!bgIsLive){vars.loop=1;vars.playlist=bgId;}
-  bgPlayer=new YT.Player('yt-bg-el',{videoId:bgId,playerVars:vars,events:{
+  if(bgPlaylist){vars.listType='playlist';vars.list=bgPlaylist;}
+  else if(!bgIsLive){vars.loop=1;vars.playlist=bgId;}
+  const cfg={playerVars:vars,events:{
     onReady:e=>{
       e.target.mute();
       if(bgVolume>0){e.target.unMute();e.target.setVolume(bgVolume);}
       e.target.playVideo();
+      if(bgPlaylist)pickRandomFromPlaylist(e.target);
       $('bg-wrap').classList.add('has-yt-bg');
       $('video-tl').style.display='block';
       $('live-badge').classList[bgIsLive?'add':'remove']('show');
@@ -1907,21 +2025,46 @@ function buildBgPlayer(){
     },
     onStateChange:e=>{
       if(e.data===YT.PlayerState.PAUSED)bgUserPaused=true;
-      if(e.data===YT.PlayerState.PLAYING)bgUserPaused=false;
+      if(e.data===YT.PlayerState.PLAYING){bgUserPaused=false;bgErrCount=0;}
       if(e.data===0&&!bgUserPaused)try{bgPlayer.playVideo();}catch(x){}
       syncBgPlayButton();
     },
     onError:e=>{
+      // in random-playlist mode (e.g. members-only / non-embeddable stream) just skip to the next one
+      if(bgPlaylist&&++bgErrCount<=8){try{e.target.nextVideo();}catch(x){}return;}
       const c={2:'Invalid URL',5:'HTML5 error',100:'Video not found',101:'Embedding not allowed',150:'Embedding not allowed'};
       showToast((currentLang==='ja'?'エラー: ':'Error: ')+(c[e.data]||'Error '+e.data));clearBg();
     }
-  }});
+  }};
+  if(!bgPlaylist)cfg.videoId=bgId;
+  bgPlayer=new YT.Player('yt-bg-el',cfg);
+}
+
+// ── Random James Scholz stream (channel UCYCO3Kifwg56zhus3XXiAVg) ──
+// 'UULV…' = the channel's automatic "live streams" playlist, 'UU…' = all uploads (fallback).
+const RAND_BG_LISTS=['UULVYCO3Kifwg56zhus3XXiAVg','UUYCO3Kifwg56zhus3XXiAVg'];
+function randomBg(idx){
+  bgListIdx=idx||0;bgErrCount=0;
+  bgPlaylist=RAND_BG_LISTS[bgListIdx];bgId='__playlist__';bgIsLive=false;
+  $('bg-url').value='';
+  destroyBg();
+  $('bg-wrap').classList.remove('has-yt-bg');
+  ensureYtMount();
+  if(ytReady)buildBgPlayer();else pendingBgPlay=true;
+}
+function pickRandomFromPlaylist(p,tries){
+  tries=tries||0;
+  let ids=[];try{ids=p.getPlaylist()||[];}catch(e){}
+  if(ids.length){try{p.setLoop(true);p.playVideoAt(Math.floor(Math.random()*ids.length));}catch(e){}return;}
+  if(tries<12){setTimeout(()=>{if(bgPlayer===p)pickRandomFromPlaylist(p,tries+1);},400);return;}
+  if(bgListIdx+1<RAND_BG_LISTS.length){randomBg(bgListIdx+1);return;}
+  showToast(currentLang==='ja'?'配信リストを読み込めませんでした':'Could not load the stream list');clearBg();
 }
 function clearBg(){
   destroyBg();
   const yt=$('yt-bg-el');if(yt)yt.remove();
   $('bg-wrap').classList.remove('has-yt-bg');
-  $('video-tl').style.display='none';stopTl();bgId='';syncBgPlayButton();
+  $('video-tl').style.display='none';stopTl();bgId='';bgPlaylist='';syncBgPlayButton();
 }
 function destroyBg(){stopTl();if(bgPlayer){try{bgPlayer.destroy();}catch(e){}bgPlayer=null;}syncBgPlayButton();}
 
@@ -2226,6 +2369,18 @@ function applyYT(){
   pendingFP=false;pendingBP=false;
   if(ytReady)buildAudioPlayers();
   showToast(t(focusId?'audioLoaded':'audioCleared'));
+}
+// One-click rain: picks a random rain video (never the same one twice in a row)
+const RAIN_IDS=['JbJ0sYt9Nyk','q__EtjKCnK4','29XymHesxa0','wyKAqO2w7-w'];
+let lastRainId='';
+function playRain(){
+  const pool=RAIN_IDS.filter(id=>id!==lastRainId);
+  lastRainId=pool[Math.floor(Math.random()*pool.length)];
+  $('focus-url').value='https://www.youtube.com/watch?v='+lastRainId;
+  applyYT();
+  showToast(t('rainToast'));
+  // already in a running focus session? start the rain as soon as the player is ready
+  if(isRunning&&isFocus)pendingFP=true;
 }
 function playFocusSound(){
   if(pBreak)try{pBreak.pauseVideo();}catch(e){}
