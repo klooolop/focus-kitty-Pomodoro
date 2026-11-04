@@ -2010,6 +2010,7 @@ function buildBgPlayer(){
     origin:(location.origin&&location.origin!=='null')?location.origin:'http://localhost'};
   if(bgPlaylist){vars.listType='playlist';vars.list=bgPlaylist;}
   else if(!bgIsLive){vars.loop=1;vars.playlist=bgId;}
+  if(window.__fkBgStart){vars.start=window.__fkBgStart;window.__fkBgStart=0;}
   const cfg={playerVars:vars,events:{
     onReady:e=>{
       e.target.mute();
@@ -2334,7 +2335,7 @@ function phaseComplete(){
     sessionHistory.unshift({num:sessions,
       date:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}),
       time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),focusMinutes:Math.round(FOCUS/60)});
-    updateStats();
+    updateStats();if(window.fkCloud)fkCloud.logSession(Math.round(FOCUS/60));
     isFocus=false;remaining=BREAK;showToast(t('focusDoneToast'));
     sendNotif('🐱 Focus Kitty',t('focusNotif'));
   }else{isFocus=true;remaining=FOCUS;showToast(t('breakDoneToast'))
@@ -2435,6 +2436,7 @@ function updateStats(){
 }
 function clearHistory(){
   sessionHistory=[];sessions=0;totalFocusSecs=0;bestStreak=0;currentStreak=0;
+  if(window.fkCloud)fkCloud.clearSessions();
   updateStats();updateUI();showToast(t('historyCleared'));
 }
 
@@ -2487,6 +2489,205 @@ updateUI();updateStats();
   ['crt-data-l','crt-data-r'].forEach(id=>{const el=$(id);if(el){const g=hex();el.innerHTML='<i>'+g+g+'</i>';}});
   mo.dataset.run=isRunning?'1':'0';
   mo.dataset.mode=isFocus?'focus':'break';
+})();
+</script>
+<!-- ══ FOCUS KITTY CLOUD (Supabase): accounts, stats, cross-device resume ══ -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+  // 1) PASTE YOUR VALUES HERE (Supabase → Project Settings → API)
+  const SUPABASE_URL='https://mdeayqtaerkdczmopcta.supabase.co/rest/v1/';
+  const SUPABASE_KEY='sb_publishable_DGwq4X89iXMDPS2xv-hIiQ_uOXtFwdg';   // the public "anon" / "publishable" key, NEVER the service_role key
+
+  const USER_DOMAIN='focuskitty.app';    // usernames become username@focuskitty.app behind the scenes
+  const RESUME_MS=24*60*60*1000;         // only restore state saved in the last 24h
+  const SAVE_EVERY=15000;                // autosave interval while the tab is visible
+
+  if(!window.supabase||SUPABASE_URL.indexOf('PASTE')===0){console.info('Focus Kitty cloud: not configured yet');return;}
+  const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const $$=id=>document.getElementById(id);
+  const L=(en,ja)=>currentLang==='ja'?ja:en;
+  let user=null,restoring=false,saveTimer=null,rowsCache=[];
+
+  // ── login UI (built from JS so index.html needs no extra markup) ──
+  const css=document.createElement('style');
+  css.textContent='#fk-auth{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6)}'
+   +'#fk-auth.show{display:flex}'
+   +'#fk-auth .box{width:min(320px,90vw);padding:18px;border-radius:12px;background:var(--bg1,#1b1b1b);border:1px solid var(--border2,#555);color:var(--text,#eee);display:flex;flex-direction:column;gap:10px}'
+   +'#fk-auth .row{display:flex;gap:6px;flex-wrap:wrap}';
+  document.head.appendChild(css);
+  const modal=document.createElement('div');modal.id='fk-auth';
+  modal.innerHTML='<div class="box"><div id="fk-title" style="font-weight:700;letter-spacing:.1em;font-size:.8rem"></div>'
+   +'<input class="inp" id="fk-user" autocomplete="username" maxlength="20">'
+   +'<input class="inp" id="fk-pass" type="password" autocomplete="current-password">'
+   +'<div id="fk-msg" style="min-height:1em;font-size:.6rem;color:var(--text2)"></div>'
+   +'<div class="row"><button class="theme-btn" type="button" id="fk-in"></button><button class="theme-btn" type="button" id="fk-up"></button><button class="theme-btn" type="button" id="fk-x">✕</button></div></div>';
+  document.body.appendChild(modal);
+
+  const hdr=$$('theme-btn')&&$$('theme-btn').parentElement;
+  const btn=document.createElement('button');btn.className='theme-btn';btn.type='button';
+  if(hdr)hdr.insertBefore(btn,hdr.firstChild);
+  function paintBtn(){btn.textContent=user?('☁ '+((user.user_metadata&&user.user_metadata.username)||'account')):L('☁ Sign in','☁ ログイン');}
+  function openModal(){
+    $$('fk-title').textContent=L('FOCUS KITTY ACCOUNT','FOCUS KITTY アカウント');
+    $$('fk-user').placeholder=L('username','ユーザー名');
+    $$('fk-pass').placeholder=L('password (8+ chars)','パスワード（8文字以上）');
+    $$('fk-in').textContent=L('Sign in','ログイン');$$('fk-up').textContent=L('Create account','新規登録');
+    $$('fk-msg').textContent='';modal.classList.add('show');$$('fk-user').focus();
+  }
+  function closeModal(){modal.classList.remove('show');$$('fk-pass').value='';}
+  btn.onclick=async()=>{
+    if(!user){openModal();return;}
+    if(confirm(L('Sign out?','ログアウトしますか？'))){await push();await sb.auth.signOut();}
+  };
+  $$('fk-x').onclick=closeModal;
+  $$('fk-in').onclick=()=>submit('in');
+  $$('fk-up').onclick=()=>submit('up');
+  $$('fk-pass').addEventListener('keydown',e=>{if(e.key==='Enter')submit('in');});
+
+  function friendly(m){
+    if(/invalid login/i.test(m))return L('Wrong username or password','ユーザー名かパスワードが違います');
+    if(/already registered/i.test(m))return L('That username is taken','そのユーザー名は使われています');
+    return m;
+  }
+  async function submit(mode){
+    const u=$$('fk-user').value.trim(),p=$$('fk-pass').value,msg=$$('fk-msg');
+    if(!/^[a-zA-Z0-9_]{3,20}$/.test(u)){msg.textContent=L('Username: 3–20 letters, numbers or _','ユーザー名は3〜20文字（英数字と_）');return;}
+    if(p.length<8){msg.textContent=L('Password: at least 8 characters','パスワードは8文字以上');return;}
+    msg.textContent='…';
+    const email=u.toLowerCase()+'@'+USER_DOMAIN;
+    const res=mode==='up'
+      ?await sb.auth.signUp({email:email,password:p,options:{data:{username:u}}})
+      :await sb.auth.signInWithPassword({email:email,password:p});
+    if(res.error){msg.textContent=friendly(res.error.message);return;}
+    if(mode==='up'&&!res.data.session){msg.textContent='Email confirmation is still ON in Supabase (Auth → Providers → Email). Turn it off.';return;}
+    closeModal();
+  }
+
+  // ── auth state ──
+  sb.auth.onAuthStateChange((ev,session)=>{
+    const next=session?session.user:null;
+    const changed=(next&&next.id)!==(user&&user.id);
+    user=next;
+    // don't await supabase calls inside this callback — defer them
+    setTimeout(()=>{paintBtn();if(changed)(user?onLogin():onLogout());},0);
+  });
+  async function onLogin(){
+    await loadSessions();
+    await pullAndRestore();
+    clearInterval(saveTimer);
+    saveTimer=setInterval(()=>{if(!document.hidden)push();},SAVE_EVERY);
+    showToast(L('Signed in ☁','ログインしました ☁'));
+  }
+  function onLogout(){
+    clearInterval(saveTimer);saveTimer=null;rowsCache=[];
+    const el=$$('fk-range');if(el)el.remove();
+  }
+
+  // ── stats (sessions table) ──
+  async function loadSessions(){
+    const r=await sb.from('sessions').select('focus_minutes,completed_at').order('completed_at',{ascending:false}).limit(5000);
+    if(r.error){console.warn('Focus Kitty sync:',r.error.message);return;}
+    rowsCache=r.data;
+    sessions=rowsCache.length;
+    totalFocusSecs=rowsCache.reduce((a,x)=>a+x.focus_minutes*60,0);
+    sessionHistory=rowsCache.slice(0,30).map((x,i)=>{
+      const d=new Date(x.completed_at);
+      return{num:rowsCache.length-i,
+        date:d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}),
+        time:d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),focusMinutes:x.focus_minutes};
+    });
+    updateStats();paintRange();
+  }
+  function paintRange(){
+    let el=$$('fk-range');
+    if(!el){
+      const g=document.querySelector('.stats-grid');if(!g)return;
+      g.insertAdjacentHTML('afterend','<div id="fk-range" style="padding:0 16px 10px;font-size:.52rem;font-weight:600;color:var(--text2);display:flex;justify-content:space-between"></div>');
+      el=$$('fk-range');
+    }
+    const now=new Date();
+    const wk=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7)); // Monday
+    const mo=new Date(now.getFullYear(),now.getMonth(),1);
+    let w=0,m=0;
+    rowsCache.forEach(x=>{const d=new Date(x.completed_at);if(d>=mo)m+=x.focus_minutes;if(d>=wk)w+=x.focus_minutes;});
+    const f=n=>{const h=Math.floor(n/60),mm=n%60;return h?h+'h '+mm+'m':mm+'m';};
+    el.innerHTML='<span>'+L('This week','今週')+': '+f(w)+'</span><span>'+L('This month','今月')+': '+f(m)+'</span>';
+  }
+  async function logSession(min){
+    if(!user)return;
+    const r=await sb.from('sessions').insert({focus_minutes:min});
+    if(r.error){console.warn('Focus Kitty sync:',r.error.message);return;}
+    rowsCache.unshift({focus_minutes:min,completed_at:new Date().toISOString()});paintRange();
+  }
+  async function clearSessions(){
+    if(!user)return;
+    const r=await sb.from('sessions').delete().eq('user_id',user.id);
+    if(r.error){console.warn('Focus Kitty sync:',r.error.message);return;}
+    rowsCache=[];paintRange();
+  }
+
+  // ── cross-device state (user_state table) ──
+  function snapshot(){
+    const s={v:1,lang:currentLang,
+      timer:{isFocus:isFocus,remaining:remaining,running:isRunning,focus:Math.round(FOCUS/60),brk:Math.round(BREAK/60),preset:activePreset},
+      audio:{focusUrl:$$('focus-url').value,breakUrl:$$('break-url').value,spotify:$$('sp-url').value}};
+    if(bgPlayer&&bgId){
+      try{
+        const vd=bgPlayer.getVideoData()||{};
+        const id=vd.video_id||(bgId!=='__playlist__'?bgId:'');
+        if(id)s.bg={videoId:id,time:bgIsLive?0:Math.floor(bgPlayer.getCurrentTime()||0),live:!!bgIsLive};
+      }catch(e){}
+    }
+    return s;
+  }
+  async function push(){
+    if(!user||restoring)return;
+    const r=await sb.from('user_state').upsert({user_id:user.id,state:snapshot()});
+    if(r.error)console.warn('Focus Kitty sync:',r.error.message);
+  }
+  async function pullAndRestore(){
+    const r=await sb.from('user_state').select('state,updated_at').eq('user_id',user.id).maybeSingle();
+    if(r.error||!r.data)return;
+    const age=Date.now()-new Date(r.data.updated_at).getTime();
+    if(age>RESUME_MS)return;                       // older than 24h → start fresh
+    restoring=true;
+    try{restore(r.data.state||{},age);}catch(e){console.warn('Focus Kitty restore:',e);}
+    restoring=false;
+  }
+  function restore(s,age){
+    if(s.lang&&s.lang!==currentLang)toggleLanguage();
+    const tm=s.timer;
+    if(tm){
+      FOCUS=tm.focus*60;BREAK=tm.brk*60;activePreset=tm.preset||'custom';isFocus=!!tm.isFocus;
+      let rem=tm.remaining-(tm.running?Math.floor(age/1000):0);   // time passed while it was running elsewhere
+      if(rem<=0)rem=isFocus?FOCUS:BREAK;
+      isRunning=false;clearInterval(interval);interval=null;timerStartedAt=null;remainingAtStart=null;
+      remaining=rem;
+      const fresh=rem>=(isFocus?FOCUS:BREAK);
+      const b=$$('start-btn');b.textContent=t(fresh?'start':'resume');b.className='btn btn-main'+(isFocus?'':' brk');
+      $$('status').textContent=t(fresh?(isFocus?'readyFocus':'readyBreak'):'statusPaused');
+      if($$('custom-focus'))$$('custom-focus').value=tm.focus;
+      if($$('custom-break'))$$('custom-break').value=tm.brk;
+      updatePresetUI();updateUI();
+    }
+    const a=s.audio;
+    if(a){
+      if(a.focusUrl||a.breakUrl){$$('focus-url').value=a.focusUrl||'';$$('break-url').value=a.breakUrl||'';applyYT();}
+      if(a.spotify){$$('sp-url').value=a.spotify;applySpotify();}
+    }
+    const bg=s.bg;
+    if(bg&&bg.videoId){
+      $$('bg-url').value=(bg.live?'https://www.youtube.com/live/':'https://www.youtube.com/watch?v=')+bg.videoId;
+      window.__fkBgStart=bg.live?0:(bg.time||0);   // read by buildBgPlayer → YouTube "start" param
+      applyBg();
+    }
+  }
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)push();});
+  window.addEventListener('pagehide',push);
+
+  window.fkCloud={logSession:logSession,clearSessions:clearSessions,push:push};
+  paintBtn();
 })();
 </script>
 </body>
