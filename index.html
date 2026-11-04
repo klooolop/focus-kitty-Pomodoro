@@ -1484,6 +1484,83 @@ body.layout-arch .crt-screen{border-radius:3px}
 .crt-ant{background:var(--crt-ant)}
 .crt-ant::after{background:var(--crt-ant-tip)}
 
+
+
+/* ── APP PAGES + FOCUS DASHBOARD ── */
+.app-nav{display:flex;gap:7px;padding:6px;border-radius:16px}
+.page-tab{flex:1;min-height:40px;border:1px solid transparent;border-radius:12px;background:transparent;color:var(--text2);font:700 .62rem 'Sora',sans-serif;letter-spacing:.045em;cursor:pointer;transition:all .18s}
+.page-tab:hover{background:var(--purple-dim);color:var(--text)}
+.page-tab.active{background:var(--purple-dim);border-color:var(--border2);color:var(--text);box-shadow:inset 0 0 0 1px rgba(255,255,255,.035)}
+#timer-page[hidden],#stats-page[hidden]{display:none!important}
+.stats-page{display:flex;flex-direction:column;gap:12px;padding-bottom:12px}
+.stats-intro{padding:8px 4px 2px}
+.stats-eyebrow{font-size:.52rem;font-weight:800;letter-spacing:.2em;color:var(--purple);margin-bottom:7px}
+.stats-intro h1{font-size:1.35rem;letter-spacing:-.04em;color:var(--text);line-height:1.2}
+.stats-intro p{font-size:.62rem;color:var(--text2);line-height:1.6;margin-top:6px}
+.stats-month-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 12px}
+.month-arrow{width:36px;height:36px;border-radius:11px;border:1px solid var(--border2);background:var(--surface2);color:var(--text);font:700 1.25rem 'Sora',sans-serif;cursor:pointer}
+.month-arrow:disabled{opacity:.3;cursor:default}
+.month-nav-center{display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.month-nav-center strong{font-size:.75rem;color:var(--text);text-align:center}
+.month-current{border:0;background:transparent;color:var(--purple);font:700 .48rem 'Sora',sans-serif;cursor:pointer;letter-spacing:.04em}
+.stats-summary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.stats-metric{padding:13px 13px 12px;min-width:0}
+.metric-label{font-size:.49rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em;color:var(--text3)}
+.metric-value{font:700 clamp(1.15rem,5vw,1.55rem) 'JetBrains Mono',monospace;color:var(--text);margin-top:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.metric-foot{font-size:.46rem;color:var(--text3);margin-top:5px;min-height:1.2em;line-height:1.35}
+.stats-chart-card,.stats-goal-card,.stats-history-card{padding:15px 14px}
+.stats-card-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:14px}
+.stats-card-heading h2{font-size:.72rem;color:var(--text);font-weight:800;letter-spacing:-.015em}
+.stats-card-heading p{font-size:.49rem;color:var(--text3);line-height:1.5;margin-top:4px}
+.chart-total{font:700 .78rem 'JetBrains Mono',monospace;color:var(--purple);white-space:nowrap}
+.month-chart{display:grid;grid-template-columns:repeat(31,minmax(0,1fr));gap:3px;align-items:end;height:143px;padding:5px 0 0}
+.month-bar-cell{height:100%;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:5px}
+.month-bar-track{width:100%;height:119px;display:flex;align-items:flex-end;justify-content:center;border-radius:4px 4px 2px 2px;background:rgba(128,128,128,.075);overflow:hidden}
+.month-bar-track i{display:block;width:100%;min-height:0;border-radius:4px 4px 1px 1px;background:linear-gradient(180deg,var(--pink),var(--purple));box-shadow:0 0 10px var(--purple-dim);transition:height .25s ease}
+.month-bar-cell small{font:500 .38rem 'DM Mono',monospace;color:var(--text3);height:10px}
+.chart-scale{display:flex;justify-content:flex-end;align-items:center;gap:6px;margin-top:6px;font-size:.42rem;color:var(--text3)}
+.chart-scale::before{content:'';width:8px;height:8px;border-radius:2px;background:var(--purple)}
+.goal-mark{font-size:1.05rem;color:var(--purple);padding:2px 3px}
+.goal-settings{display:flex;flex-direction:column;gap:7px;margin-bottom:14px}
+.goal-settings label{font-size:.49rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.goal-input-wrap{display:flex;gap:8px;align-items:center}
+.goal-input-wrap .inp{min-width:0;width:88px;flex:0 0 88px;font-size:.66rem;padding:9px 10px}
+.goal-input-wrap .btn{font-size:.52rem;padding:9px 12px}
+.goal-progress-meta{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.49rem;color:var(--text3);margin-bottom:7px}
+.goal-progress-meta strong{font:600 .54rem 'JetBrains Mono',monospace;color:var(--text2)}
+.goal-track{height:9px;border-radius:20px;background:rgba(128,128,128,.16);overflow:hidden}
+.goal-fill{height:100%;border-radius:20px;background:linear-gradient(90deg,var(--purple),var(--pink));box-shadow:0 0 12px var(--purple-dim);transition:width .35s ease}
+.goal-message{font-size:.56rem;line-height:1.6;color:var(--text2);margin-top:11px}
+.goal-raise-btn{margin-top:10px;font-size:.51rem;padding:8px 12px}
+.history-heading{align-items:center;margin-bottom:10px}
+.clear-history-btn{font-size:.46rem;padding:6px 9px;white-space:nowrap}
+.stats-history-list{display:flex;flex-direction:column;gap:6px;max-height:350px;overflow-y:auto;scrollbar-width:thin}
+.stats-history-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;background:rgba(128,128,128,.06);border:1px solid var(--border)}
+.stats-history-date{font-size:.54rem;font-weight:700;color:var(--text)}
+.stats-history-time{font-size:.46rem;color:var(--text3);margin-top:3px}
+.stats-history-duration{font:600 .56rem 'JetBrains Mono',monospace;color:var(--purple);white-space:nowrap}
+.stats-empty{font-size:.54rem;color:var(--text3);text-align:center;line-height:1.6;padding:20px 8px}
+.stats-sync-note{font-size:.48rem;color:var(--text3);line-height:1.55;text-align:center;padding:2px 10px 6px}
+body.layout-arch .app-nav,body.layout-arch .stats-month-nav,body.layout-arch .stats-metric,body.layout-arch .stats-chart-card,body.layout-arch .stats-goal-card,body.layout-arch .stats-history-card{border-radius:0}
+body.layout-arch .page-tab{border-radius:0}
+body.layout-arch .page-tab.active{background:rgba(0,255,136,.09);border-color:var(--border2);color:var(--text)}
+body.layout-arch .month-arrow{border-radius:0;background:#040804}
+body.layout-arch .month-bar-track{border-radius:0;background:rgba(0,255,136,.05)}
+body.layout-arch .month-bar-track i{border-radius:0;background:linear-gradient(180deg,#7dffc4,#00c875)}
+body.layout-arch .goal-track{border-radius:0}
+body.layout-arch .goal-fill{border-radius:0;background:linear-gradient(90deg,#00ff88,#00c8ff)}
+@media(min-width:560px){
+  .stats-summary-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .stats-metric{padding:15px 12px}
+  .month-chart{gap:5px}
+}
+@media(max-width:360px){
+  .stats-intro h1{font-size:1.2rem}
+  .metric-value{font-size:1.08rem}
+  .month-chart{gap:2px}
+  .month-bar-cell small{font-size:.34rem}
+}
+
 </style>
 </head>
 <body class="theme-coffee">
@@ -1548,6 +1625,12 @@ body.layout-arch .crt-screen{border-radius:3px}
     </div>
   </div>
 
+  <div class="card app-nav" role="tablist" aria-label="Focus Kitty pages">
+    <button class="page-tab active" type="button" id="timer-tab" role="tab" aria-selected="true" onclick="showAppPage('timer')" data-i18n="timerTab">◷ Timer</button>
+    <button class="page-tab" type="button" id="stats-tab" role="tab" aria-selected="false" onclick="showAppPage('stats')" data-i18n="statsTab">▥ Stats</button>
+  </div>
+
+  <div id="timer-page">
   <!-- CAT + TIMER -->
   <div class="cat-card">
     <div class="cat-wrap">
@@ -1784,33 +1867,98 @@ body.layout-arch .crt-screen{border-radius:3px}
     </div>
   </div>
 
-  <!-- STATS -->
-  <div class="sec-label" data-i18n="statsHistory">Stats &amp; History</div>
-  <div class="card">
-    <div class="stats-grid">
-      <div class="stat-box">
-        <div class="stat-num" id="stat-sessions">0</div>
-        <div class="stat-lbl" data-i18n="sessions">Sessions</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num" id="stat-hours">0m</div>
-        <div class="stat-lbl" data-i18n="focusTime">Focus Time</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num" id="stat-streak">0</div>
-        <div class="stat-lbl" data-i18n="bestStreak">Best Streak</div>
-      </div>
-    </div>
-    <div class="history-header">
-      <div style="font-size:.5rem;font-weight:700;letter-spacing:.15em;color:var(--text3);text-transform:uppercase" data-i18n="history">History</div>
-      <button class="btn" style="font-size:.45rem;padding:4px 10px" onclick="clearHistory()" data-i18n="clear">Clear</button>
-    </div>
-    <div class="history-list" id="history-list">
-      <div data-i18n="emptyHistory" style="font-size:.52rem;font-weight:600;color:var(--text3);text-align:center;padding:14px 0">No sessions yet — start focusing! 🐱</div>
-    </div>
-  </div>
-
   <div class="footer" data-i18n="footerHelp">Space = timer · P = BG video · Zen = video only · Esc = exit Zen · R / S = reset / skip</div>
+  </div><!-- /timer-page -->
+
+  <section id="stats-page" class="stats-page" hidden aria-labelledby="stats-title">
+    <div class="stats-intro">
+      <div class="stats-eyebrow" data-i18n="statsEyebrow">YOUR FOCUS, IN PERSPECTIVE</div>
+      <h1 id="stats-title" data-i18n="statsTitle">Focus dashboard</h1>
+      <p data-i18n="statsIntro">See what you have built, one focused session at a time.</p>
+    </div>
+
+    <div class="card stats-month-nav">
+      <button class="month-arrow" type="button" onclick="changeStatsMonth(-1)" aria-label="Previous month">‹</button>
+      <div class="month-nav-center">
+        <strong id="stats-month-label">November 2026</strong>
+        <button class="month-current" type="button" id="stats-current-month" onclick="goToCurrentStatsMonth()" data-i18n="thisMonth">This month</button>
+      </div>
+      <button class="month-arrow" type="button" onclick="changeStatsMonth(1)" aria-label="Next month" id="stats-next-month">›</button>
+    </div>
+
+    <div class="stats-summary-grid">
+      <div class="card stats-metric">
+        <div class="metric-label" data-i18n="statsMonthTime">Focused time</div>
+        <div class="metric-value" id="stats-month-focus">0m</div>
+        <div class="metric-foot" id="stats-month-compare"></div>
+      </div>
+      <div class="card stats-metric">
+        <div class="metric-label" data-i18n="statsMonthSessions">Sessions</div>
+        <div class="metric-value" id="stats-month-sessions">0</div>
+        <div class="metric-foot" data-i18n="completedSessions">completed focus sessions</div>
+      </div>
+      <div class="card stats-metric">
+        <div class="metric-label" data-i18n="statsActiveDays">Active days</div>
+        <div class="metric-value" id="stats-active-days">0</div>
+        <div class="metric-foot" data-i18n="daysWithFocus">days with at least one session</div>
+      </div>
+      <div class="card stats-metric">
+        <div class="metric-label" data-i18n="statsBestDay">Best day</div>
+        <div class="metric-value" id="stats-best-day">—</div>
+        <div class="metric-foot" id="stats-best-day-date">—</div>
+      </div>
+    </div>
+
+    <div class="card stats-chart-card">
+      <div class="stats-card-heading">
+        <div>
+          <h2 data-i18n="dailyActivity">Daily focus activity</h2>
+          <p data-i18n="dailyActivityHint">Minutes of completed focus sessions per day</p>
+        </div>
+        <div class="chart-total" id="stats-chart-total">0m</div>
+      </div>
+      <div class="month-chart" id="month-chart" role="img" aria-label="Daily focus time during the selected month"></div>
+      <div class="chart-scale"><span data-i18n="lessFocus">Less</span><span data-i18n="moreFocus">More</span></div>
+    </div>
+
+    <div class="card stats-goal-card">
+      <div class="stats-card-heading">
+        <div>
+          <h2 data-i18n="weeklyGoal">Weekly focus goal</h2>
+          <p data-i18n="weeklyGoalHint">Choose a target that challenges you without overwhelming you.</p>
+        </div>
+        <div class="goal-mark">✦</div>
+      </div>
+      <div class="goal-settings">
+        <label for="goal-hours" data-i18n="goalHours">Hours per week</label>
+        <div class="goal-input-wrap">
+          <input id="goal-hours" class="inp" type="number" min="1" max="40" step="0.5" value="10" inputmode="decimal" />
+          <button class="btn" type="button" onclick="saveWeeklyGoal()" data-i18n="saveGoal">Save goal</button>
+        </div>
+      </div>
+      <div class="goal-progress-meta">
+        <span data-i18n="goalProgress">Weekly progress</span>
+        <strong id="goal-progress-text">0m / 10h</strong>
+      </div>
+      <div class="goal-track"><div class="goal-fill" id="goal-progress-fill" style="width:0%"></div></div>
+      <p class="goal-message" id="goal-message" aria-live="polite">Start small: complete one focus session today. Consistency grows from there.</p>
+      <button class="btn goal-raise-btn" id="goal-raise-btn" type="button" onclick="raiseWeeklyGoal()" hidden data-i18n="raiseGoal">Add 30 minutes to next week’s goal</button>
+    </div>
+
+    <div class="card stats-history-card">
+      <div class="stats-card-heading history-heading">
+        <div>
+          <h2 data-i18n="recentSessions">Recent sessions</h2>
+          <p data-i18n="recentSessionsHint">Your latest completed focus sessions</p>
+        </div>
+        <button class="btn clear-history-btn" type="button" onclick="clearHistory()" data-i18n="clearHistory">Clear history</button>
+      </div>
+      <div class="stats-history-list" id="stats-history-list">
+        <div class="stats-empty" data-i18n="noRecentSessions">No completed focus sessions yet. Your first session will appear here.</div>
+      </div>
+    </div>
+    <div class="stats-sync-note" id="stats-sync-note" aria-live="polite"></div>
+  </section>
 </div>
 
 <div id="yt-af" style="position:fixed;bottom:-9px;width:1px;height:1px;overflow:hidden"></div>
@@ -1841,6 +1989,21 @@ let cinemaMode=false,bgUserPaused=false;
 
 const $=id=>document.getElementById(id);
 
+const LOCAL_STATS_KEY='focus-kitty-local-sessions-v1';
+let localSessionRows=[];
+try{
+  const saved=JSON.parse(localStorage.getItem(LOCAL_STATS_KEY)||'[]');
+  if(Array.isArray(saved))localSessionRows=saved.filter(x=>x&&Number(x.focus_minutes)>0&&x.completed_at);
+}catch(e){}
+sessions=localSessionRows.length;
+totalFocusSecs=localSessionRows.reduce((sum,x)=>sum+(Number(x.focus_minutes)||0)*60,0);
+function persistLocalSessionRows(){
+  try{localStorage.setItem(LOCAL_STATS_KEY,JSON.stringify(localSessionRows.slice(0,5000)));}catch(e){}
+}
+let statsMonth=new Date();statsMonth=new Date(statsMonth.getFullYear(),statsMonth.getMonth(),1);
+let weeklyGoalMinutes=600;
+try{const savedGoal=Number(localStorage.getItem('focus-kitty-weekly-goal-minutes'));if(savedGoal>=60&&savedGoal<=2400)weeklyGoalMinutes=savedGoal;}catch(e){}
+
 // ── EN / 日本語 LOCALIZATION ──
 let currentLang='en';
 const I18N={
@@ -1855,13 +2018,18 @@ const I18N={
     classic:'Classic',deepWork:'Deep Work',ultradian:'Ultradian',custom:'Custom',focusBreakCaption:'focus / break',focusMinutes:'Focus (minutes)',breakMinutes:'Break (minutes)',applyCustom:'Apply custom times',
     backgroundVideo:'Background Video',audio:'Audio',youtubeSound:'YouTube Sound',spotify:'Spotify',alarm:'Alarm',alarmVolume:'Alarm Volume',testAlarm:'Test 🔔',
     statsHistory:'Stats & History',sessions:'Sessions',focusTime:'Focus Time',bestStreak:'Best Streak',history:'History',clear:'Clear',emptyHistory:'No sessions yet — start focusing! 🐱',
+    timerTab:'◷ Timer',statsTab:'▥ Stats',statsEyebrow:'YOUR FOCUS, IN PERSPECTIVE',statsTitle:'Focus dashboard',statsIntro:'See what you have built, one focused session at a time.',
+    thisMonth:'This month',statsMonthTime:'Focused time',statsMonthSessions:'Sessions',statsActiveDays:'Active days',statsBestDay:'Best day',completedSessions:'focus sessions',daysWithFocus:'days with at least one session',
+    dailyActivity:'Daily focus activity',dailyActivityHint:'Minutes of completed focus sessions per day',lessFocus:'Less',moreFocus:'More',weeklyGoal:'Weekly focus goal',weeklyGoalHint:'Choose a target that challenges you without overwhelming you.',goalHours:'Hours per week',saveGoal:'Save goal',goalProgress:'Weekly progress',
+    goalReachedMessage:'You reached your weekly goal. Great work. When you are ready, raise your weekly target by 30 minutes.',goalCloseMessage:n=>`${n} left this week. You’re close — one more focused session can move you forward.`,goalStartMessage:'Start small: complete one focus session today. Consistency grows from there.',goalEmptyMessage:'No focus time recorded this week yet. A single session is a good start.',raiseGoal:'Raise weekly goal by 30 minutes',goalSaved:'Weekly goal saved',goalRangeError:'Choose a weekly goal from 1 to 40 hours.',
+    recentSessions:'Recent sessions',recentSessionsHint:'Your latest focus sessions',noRecentSessions:'No completed focus sessions yet. Your first session will appear here.',clearHistory:'Clear history',clearHistoryConfirm:'Clear all saved focus sessions? This cannot be undone.',cloudSynced:'Your sessions are saved to your Focus Kitty account and sync across devices.',deviceOnlyStats:'These stats are saved on this device. Sign in with the cloud button to sync them across devices.',firstMonth:'Your first recorded focus month.',monthVsPrevious:'vs previous month',
     startWord:'Start',endWord:'End',load:'Load',randBg:'🎲 Random',apply:'Apply',rainBtn:'🌧 Rain',rainToast:'Rain loaded 🌧',dim:'Dim',volumeShort:'Vol',live:'LIVE',
     compact:'Compact',normal:'Normal',full:'Full',bgPlaceholder:'YouTube URL or live stream...',focusUrlPlaceholder:'focus URL...',breakUrlPlaceholder:'break URL (opt.)',spotifyUrlPlaceholder:'Spotify URL...',
     playVideo:'▶ Play video',pauseVideo:'⏸ Pause video',zen:'Zen',exitZen:'Exit',showUI:'Show UI',archUI:'🏔️ Arch UI',kittyUI:'🐱 Kitty UI',
     footerHelp:'Space = timer · P = BG video · Zen = video only · Esc = exit Zen · R / S = reset / skip',
     autoStartOn:'Auto start on — timers will chain 🔗',autoStartOff:'Auto start off — manual control ✋',
     archToast:'Arch layout — tools only, no mascot',kittyToast:'Kitty layout — full UI',zenOnToast:'Zen — only the background video is visible',zenOffToast:'Back to Focus Kitty UI',
-    focusDoneToast:'Focus done! Time for a break 🐱',breakDoneToast:'Break over. Back to focus! 💪',presetChanged:(f,b)=>`Session set to ${f} min focus / ${b} min break`,
+    focusDoneToast:'Focus done! Time for a break 🐱',sessionSkippedToast:'Session skipped — less than a minute logged.',breakDoneToast:'Break over. Back to focus! 💪',presetChanged:(f,b)=>`Session set to ${f} min focus / ${b} min break`,
     customRangeError:'Choose focus 1–240 min and break 1–180 min.',historyCleared:'History cleared 🗑️',sessionCount:n=>`${n} session${n===1?'':'s'}`,
     noBackground:'Load a background video first',playbackError:'Could not control playback',invalidSpotify:'Invalid Spotify URL',spotifyLoaded:'Spotify loaded 🎵',
     audioLoaded:'Audio loaded 🎵',audioCleared:'No URL — sounds cleared',focusNotif:'Focus session done! Time for a break.',breakNotif:'Break over — back to focus!',
@@ -1878,13 +2046,18 @@ const I18N={
     classic:'クラシック',deepWork:'ディープワーク',ultradian:'ウルトラディアン',custom:'カスタム',focusBreakCaption:'集中 / 休憩',focusMinutes:'集中時間（分）',breakMinutes:'休憩時間（分）',applyCustom:'時間を適用',
     backgroundVideo:'背景動画',audio:'音声',youtubeSound:'YouTube 音声',spotify:'Spotify',alarm:'アラーム',alarmVolume:'アラーム音量',testAlarm:'テスト 🔔',
     statsHistory:'統計と履歴',sessions:'セッション数',focusTime:'集中時間',bestStreak:'最長連続記録',history:'履歴',clear:'クリア',emptyHistory:'まだセッションがありません。集中を始めましょう！ 🐱',
+    timerTab:'◷ タイマー',statsTab:'▥ 統計',statsEyebrow:'集中の記録',statsTitle:'フォーカスダッシュボード',statsIntro:'一つひとつの集中セッションを振り返りましょう。',
+    thisMonth:'今月',statsMonthTime:'今月の集中時間',statsMonthSessions:'セッション数',statsActiveDays:'集中した日',statsBestDay:'最も集中した日',completedSessions:'集中セッション',daysWithFocus:'1回以上集中した日',
+    dailyActivity:'日ごとの集中時間',dailyActivityHint:'1日ごとの完了した集中セッション（分）',lessFocus:'少',moreFocus:'多',weeklyGoal:'週間集中目標',weeklyGoalHint:'無理なく少しずつ挑戦できる目標を設定しましょう。',goalHours:'週間目標（時間）',saveGoal:'目標を保存',goalProgress:'週間の進捗',
+    goalReachedMessage:'今週の目標を達成しました。素晴らしいです。準備ができたら週間目標を30分増やしましょう。',goalCloseMessage:n=>`今週の目標まであと${n}です。もう1回集中すれば近づけます。`,goalStartMessage:'まずは今日、集中セッションを1回完了してみましょう。',goalEmptyMessage:'今週の集中記録はまだありません。まずは1回から始めましょう。',raiseGoal:'週間目標を30分増やす',goalSaved:'週間目標を保存しました',goalRangeError:'週間目標は1〜40時間で設定してください。',
+    recentSessions:'最近のセッション',recentSessionsHint:'最近の集中セッション',noRecentSessions:'完了した集中セッションはまだありません。最初の記録がここに表示されます。',clearHistory:'履歴を消去',clearHistoryConfirm:'保存したすべての集中セッションを消去しますか？元に戻せません。',cloudSynced:'セッションはFocus Kittyアカウントに保存され、デバイス間で同期されます。',deviceOnlyStats:'統計はこのデバイスに保存されています。クラウドボタンからログインするとデバイス間で同期できます。',firstMonth:'最初の集中記録月です。',monthVsPrevious:'前月との比較',
     startWord:'開始',endWord:'終了',load:'読み込む',randBg:'🎲 ランダム',apply:'適用',rainBtn:'🌧 雨音',rainToast:'雨音を読み込みました 🌧',dim:'暗さ',volumeShort:'音量',live:'ライブ',
     compact:'コンパクト',normal:'標準',full:'フル',bgPlaceholder:'YouTube URL またはライブ配信...',focusUrlPlaceholder:'集中用 URL...',breakUrlPlaceholder:'休憩用 URL（任意）',spotifyUrlPlaceholder:'Spotify URL...',
     playVideo:'▶ 動画を再生',pauseVideo:'⏸ 動画を一時停止',zen:'禅モード',exitZen:'終了',showUI:'UIを表示',archUI:'🏔️ Arch UI',kittyUI:'🐱 Kitty UI',
     footerHelp:'Space = タイマー · P = 背景動画 · Zen = 動画のみ · Esc = Zen終了 · R / S = リセット / スキップ',
     autoStartOn:'自動開始オン — セッションを自動で切り替えます 🔗',autoStartOff:'自動開始オフ — 手動操作 ✋',
     archToast:'Archレイアウト — ツールのみ',kittyToast:'Kittyレイアウト — フルUI',zenOnToast:'禅モード — 背景動画のみ表示',zenOffToast:'Focus Kitty のUIに戻りました',
-    focusDoneToast:'集中完了！休憩しましょう 🐱',breakDoneToast:'休憩終了。集中に戻りましょう！ 💪',presetChanged:(f,b)=>`セッション設定：集中 ${f} 分 / 休憩 ${b} 分`,
+    focusDoneToast:'集中完了！休憩しましょう 🐱',sessionSkippedToast:'1分未満のため記録されませんでした。',breakDoneToast:'休憩終了。集中に戻りましょう！ 💪',presetChanged:(f,b)=>`セッション設定：集中 ${f} 分 / 休憩 ${b} 分`,
     customRangeError:'集中は1〜240分、休憩は1〜180分で設定してください。',historyCleared:'履歴をクリアしました 🗑️',sessionCount:n=>`${n} セッション`,
     noBackground:'先に背景動画を読み込んでください',playbackError:'再生を操作できませんでした',invalidSpotify:'Spotify の URL が正しくありません',spotifyLoaded:'Spotifyを読み込みました 🎵',
     audioLoaded:'音声を読み込みました 🎵',audioCleared:'URLがないため音声を解除しました',focusNotif:'集中セッションが完了しました。休憩しましょう。',breakNotif:'休憩終了。集中に戻りましょう！',
@@ -2321,23 +2494,37 @@ function resetTimer(){
   $('status').textContent=t('statusReady');
   pauseAudio();updateUI();
 }
-function skipPhase(){clearInterval(interval);isRunning=false;phaseComplete();}
-function phaseComplete(){
+function skipPhase(){
+  let elapsedFocusMinutes=null;
+  if(isFocus){
+    const remainingNow=isRunning&&timerStartedAt!==null
+      ?Math.max(0,remainingAtStart-Math.floor((Date.now()-timerStartedAt)/1000))
+      :remaining;
+    elapsedFocusMinutes=Math.floor(Math.max(0,FOCUS-remainingNow)/60);
+  }
+  clearInterval(interval);isRunning=false;phaseComplete(elapsedFocusMinutes);
+}
+function phaseComplete(focusMinutesOverride=null){
   isRunning=false;
   if(interval){clearInterval(interval);interval=null;}
   pauseAudio();
   const d=$('timer-display');d.classList.add('glitch');setTimeout(()=>d.classList.remove('glitch'),400);
   playAlarm();
   if(isFocus){
-    sessions++;totalFocusSecs+=FOCUS;currentStreak++;
-    if(currentStreak>bestStreak)bestStreak=currentStreak;
-    const now=new Date();
-    sessionHistory.unshift({num:sessions,
-      date:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}),
-      time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),focusMinutes:Math.round(FOCUS/60)});
-    updateStats();if(window.fkCloud)fkCloud.logSession(Math.round(FOCUS/60));
-    isFocus=false;remaining=BREAK;showToast(t('focusDoneToast'));
-    sendNotif('🐱 Focus Kitty',t('focusNotif'));
+    const focusMinutes=focusMinutesOverride===null?Math.round(FOCUS/60):Math.max(0,focusMinutesOverride);
+    if(focusMinutes>0){
+      sessions++;totalFocusSecs+=focusMinutes*60;currentStreak++;
+      if(currentStreak>bestStreak)bestStreak=currentStreak;
+      const now=new Date(),completedAt=now.toISOString();
+      sessionHistory.unshift({num:sessions,completedAt,
+        date:now.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}),
+        time:now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),focusMinutes});
+      if(window.fkCloud&&fkCloud.isSignedIn())fkCloud.logSession(focusMinutes,completedAt);
+      else{localSessionRows.unshift({focus_minutes:focusMinutes,completed_at:completedAt});localSessionRows=localSessionRows.slice(0,5000);persistLocalSessionRows();}
+      updateStats();showToast(t('focusDoneToast'));
+      sendNotif('🐱 Focus Kitty',t('focusNotif'));
+    }else showToast(t('sessionSkippedToast'));
+    isFocus=false;remaining=BREAK;
   }else{isFocus=true;remaining=FOCUS;showToast(t('breakDoneToast'))
     sendNotif('🐱 Focus Kitty',t('breakNotif'));
   }  updateUI();
@@ -2410,33 +2597,136 @@ function applySpotify(){
   $('sp-wrap').style.display='block';showToast(t('spotifyLoaded'));
 }
 
-// ── STATS ──
+// ── STATS DASHBOARD ──
+function getStatsRows(){
+  if(window.fkCloud&&fkCloud.isSignedIn()&&typeof fkCloud.getStatsRows==='function')return fkCloud.getStatsRows();
+  return localSessionRows;
+}
+function focusTimeLabel(minutes){
+  minutes=Math.max(0,Math.round(Number(minutes)||0));
+  const h=Math.floor(minutes/60),m=minutes%60;
+  if(h&&m)return `${h}h ${m}m`;
+  if(h)return `${h}h`;
+  return `${m}m`;
+}
+function localDayKey(date){
+  return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+}
+function changeStatsMonth(delta){
+  statsMonth=new Date(statsMonth.getFullYear(),statsMonth.getMonth()+delta,1);
+  updateStats();
+}
+function goToCurrentStatsMonth(){
+  const now=new Date();statsMonth=new Date(now.getFullYear(),now.getMonth(),1);updateStats();
+}
+function showAppPage(page){
+  const isStats=page==='stats';
+  $('timer-page').hidden=isStats;
+  $('stats-page').hidden=!isStats;
+  $('timer-tab').classList.toggle('active',!isStats);
+  $('stats-tab').classList.toggle('active',isStats);
+  $('timer-tab').setAttribute('aria-selected',String(!isStats));
+  $('stats-tab').setAttribute('aria-selected',String(isStats));
+  if(isStats)updateStats();
+  const shell=document.querySelector('.shell');if(shell)shell.scrollTo({top:0,behavior:'smooth'});
+}
+function saveWeeklyGoal(){
+  const hours=Number($('goal-hours').value);
+  if(!Number.isFinite(hours)||hours<1||hours>40){showToast(t('goalRangeError'));return;}
+  weeklyGoalMinutes=Math.round(hours*60);
+  try{localStorage.setItem('focus-kitty-weekly-goal-minutes',String(weeklyGoalMinutes));}catch(e){}
+  if(window.fkCloud&&fkCloud.isSignedIn())fkCloud.push();
+  updateStats();showToast(t('goalSaved'));
+}
+function raiseWeeklyGoal(){
+  weeklyGoalMinutes=Math.min(2400,weeklyGoalMinutes+30);
+  try{localStorage.setItem('focus-kitty-weekly-goal-minutes',String(weeklyGoalMinutes));}catch(e){}
+  if(window.fkCloud&&fkCloud.isSignedIn())fkCloud.push();
+  updateStats();
+}
 function updateStats(){
-  $('stat-sessions').textContent=sessions;
-  $('stat-streak').textContent=bestStreak;
-  const h=Math.floor(totalFocusSecs/3600),m=Math.floor((totalFocusSecs%3600)/60);
-  $('stat-hours').textContent=currentLang==='ja'?(h>0?`${h}時間 ${m}分`:`${m}分`):(h>0?`${h}h ${m}m`:`${m}m`);
-  const list=$('history-list');
-  if(!sessionHistory.length){
-    list.innerHTML='<div data-i18n="emptyHistory" style="font-size:.52rem;font-weight:600;color:var(--text3);text-align:center;padding:14px 0">'+t('emptyHistory')+'</div>';
-    return;
+  const rows=(getStatsRows()||[]).filter(x=>x&&x.completed_at&&Number(x.focus_minutes)>0).slice();
+  rows.sort((a,b)=>new Date(b.completed_at)-new Date(a.completed_at));
+
+  const year=statsMonth.getFullYear(),month=statsMonth.getMonth();
+  const monthRows=rows.filter(x=>{const d=new Date(x.completed_at);return !isNaN(d)&&d.getFullYear()===year&&d.getMonth()===month;});
+  const byDay=new Map();
+  let monthMinutes=0;
+  monthRows.forEach(x=>{
+    const d=new Date(x.completed_at),key=localDayKey(d),mins=Number(x.focus_minutes)||0;
+    monthMinutes+=mins;byDay.set(key,(byDay.get(key)||0)+mins);
+  });
+  const activeDays=byDay.size;
+  let bestEntry=null;
+  byDay.forEach((mins,key)=>{if(!bestEntry||mins>bestEntry.minutes)bestEntry={key,minutes:mins};});
+
+  const locale=currentLang==='ja'?'ja-JP':'en-GB';
+  $('stats-month-label').textContent=statsMonth.toLocaleDateString(locale,{month:'long',year:'numeric'});
+  $('stats-current-month').hidden=(year===new Date().getFullYear()&&month===new Date().getMonth());
+  $('stats-next-month').disabled=(year>new Date().getFullYear()||(year===new Date().getFullYear()&&month>=new Date().getMonth()));
+  $('stats-month-focus').textContent=focusTimeLabel(monthMinutes);
+  $('stats-month-sessions').textContent=String(monthRows.length);
+  $('stats-active-days').textContent=String(activeDays);
+  $('stats-chart-total').textContent=focusTimeLabel(monthMinutes);
+  if(bestEntry){
+    $('stats-best-day').textContent=focusTimeLabel(bestEntry.minutes);
+    const [yy,mm,dd]=bestEntry.key.split('-').map(Number);
+    $('stats-best-day-date').textContent=new Date(yy,mm-1,dd).toLocaleDateString(locale,{day:'numeric',month:'short'});
+  }else{$('stats-best-day').textContent='—';$('stats-best-day-date').textContent='—';}
+
+  const previousStart=new Date(year,month-1,1),previousEnd=new Date(year,month,1);
+  const previousMinutes=rows.reduce((sum,x)=>{const d=new Date(x.completed_at);return d>=previousStart&&d<previousEnd?sum+(Number(x.focus_minutes)||0):sum;},0);
+  let compare='';
+  if(previousMinutes>0){const pct=Math.round((monthMinutes-previousMinutes)/previousMinutes*100);compare=(pct>0?'↑ ':pct<0?'↓ ':'')+Math.abs(pct)+'% '+t('monthVsPrevious');}
+  else if(monthMinutes>0)compare=t('firstMonth');
+  $('stats-month-compare').textContent=compare;
+
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const dailyValues=Array.from({length:daysInMonth},(_,i)=>byDay.get(`${year}-${String(month+1).padStart(2,'0')}-${String(i+1).padStart(2,'0')}`)||0);
+  const maxDaily=Math.max(1,...dailyValues);
+  const tickDays=new Set([1,5,10,15,20,25,30,31]);
+  $('month-chart').innerHTML=dailyValues.map((mins,i)=>{
+    const day=i+1,pct=mins?Math.max(5,Math.round(mins/maxDaily*100)):0;
+    const dateLabel=new Date(year,month,day).toLocaleDateString(locale,{day:'numeric',month:'short'});
+    return `<div class="month-bar-cell" title="${dateLabel}: ${focusTimeLabel(mins)}"><div class="month-bar-track"><i style="height:${pct}%"></i></div><small>${tickDays.has(day)?day:''}</small></div>`;
+  }).join('');
+  $('month-chart').setAttribute('aria-label',`${t('dailyActivity')} — ${statsMonth.toLocaleDateString(locale,{month:'long',year:'numeric'})}`);
+
+  const now=new Date(),weekStart=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  weekStart.setHours(0,0,0,0);weekStart.setDate(weekStart.getDate()-((weekStart.getDay()+6)%7));
+  const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+7);
+  const weekMinutes=rows.reduce((sum,x)=>{const d=new Date(x.completed_at);return d>=weekStart&&d<weekEnd?sum+(Number(x.focus_minutes)||0):sum;},0);
+  const goalPct=Math.min(100,Math.round(weekMinutes/weeklyGoalMinutes*100));
+  $('goal-progress-text').textContent=focusTimeLabel(weekMinutes)+' / '+focusTimeLabel(weeklyGoalMinutes);
+  $('goal-progress-fill').style.width=goalPct+'%';
+  $('goal-hours').value=(weeklyGoalMinutes/60).toString();
+  const remainingGoal=Math.max(0,weeklyGoalMinutes-weekMinutes);
+  let goalMessage;
+  if(weekMinutes===0)goalMessage=monthRows.length?t('goalEmptyMessage'):t('goalStartMessage');
+  else if(weekMinutes>=weeklyGoalMinutes)goalMessage=t('goalReachedMessage');
+  else goalMessage=t('goalCloseMessage',focusTimeLabel(remainingGoal));
+  $('goal-message').textContent=goalMessage;
+  $('goal-raise-btn').hidden=weekMinutes<weeklyGoalMinutes||weeklyGoalMinutes>=2400;
+
+  const recent=rows.slice(0,10);
+  if(!recent.length){
+    $('stats-history-list').innerHTML=`<div class="stats-empty">${t('noRecentSessions')}</div>`;
+  }else{
+    $('stats-history-list').innerHTML=recent.map(x=>{
+      const d=new Date(x.completed_at),date=d.toLocaleDateString(locale,{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+      const time=d.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'});
+      return `<div class="stats-history-item"><div><div class="stats-history-date">${date}</div><div class="stats-history-time">${time}</div></div><div class="stats-history-duration">${focusTimeLabel(x.focus_minutes)}</div></div>`;
+    }).join('');
   }
-  list.innerHTML=sessionHistory.slice(0,30).map(s=>`
-    <div class="h-item">
-      <div style="display:flex;align-items:center;gap:8px">
-        <div style="width:8px;height:8px;border-radius:50%;background:var(--purple);box-shadow:0 0 5px rgba(255,107,61,.4);flex-shrink:0"></div>
-        <span style="font-size:.56rem;font-weight:700;color:var(--text)">${currentLang==='ja'?'セッション #':'Session #'}${s.num}</span>
-        <span style="font-size:.5rem;color:var(--text3)">${s.focusMinutes||Math.round(FOCUS/60)} ${currentLang==='ja'?'分':'min'}</span>
-      </div>
-      <div style="text-align:right">
-        <div style="font-size:.5rem;font-weight:600;color:var(--text2)">${s.time}</div>
-        <div style="font-size:.44rem;color:var(--text3)">${s.date}</div>
-      </div>
-    </div>`).join('');
+
+  const synced=!!(window.fkCloud&&fkCloud.isSignedIn());
+  $('stats-sync-note').textContent=t(synced?'cloudSynced':'deviceOnlyStats');
 }
 function clearHistory(){
+  if(!confirm(t('clearHistoryConfirm')))return;
   sessionHistory=[];sessions=0;totalFocusSecs=0;bestStreak=0;currentStreak=0;
-  if(window.fkCloud)fkCloud.clearSessions();
+  localSessionRows=[];persistLocalSessionRows();
+  if(window.fkCloud&&fkCloud.isSignedIn())fkCloud.clearSessions();
   updateStats();updateUI();showToast(t('historyCleared'));
 }
 
@@ -2492,19 +2782,21 @@ updateUI();updateStats();
 })();
 </script>
 <!-- ══ FOCUS KITTY CLOUD (Supabase): accounts, stats, cross-device resume ══ -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <script>
 (function(){
   // 1) PASTE YOUR VALUES HERE (Supabase → Project Settings → API)
-  const SUPABASE_URL='https://mdeayqtaerkdczmopcta.supabase.co/rest/v1/';
+  const SUPABASE_URL='https://mdeayqtaerkdczmopcta.supabase.co';
   const SUPABASE_KEY='sb_publishable_DGwq4X89iXMDPS2xv-hIiQ_uOXtFwdg';   // the public "anon" / "publishable" key, NEVER the service_role key
 
   const USER_DOMAIN='focuskitty.app';    // usernames become username@focuskitty.app behind the scenes
   const RESUME_MS=24*60*60*1000;         // only restore state saved in the last 24h
   const SAVE_EVERY=15000;                // autosave interval while the tab is visible
 
-  if(!window.supabase||SUPABASE_URL.indexOf('PASTE')===0){console.info('Focus Kitty cloud: not configured yet');return;}
-  const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  if(!window.supabase||SUPABASE_URL.indexOf('PASTE')===0||SUPABASE_KEY.indexOf('PASTE')===0){console.info('Focus Kitty cloud: not configured yet');return;}
+  // Accept a pasted REST URL defensively, but Supabase createClient must receive the project root.
+  const PROJECT_URL=SUPABASE_URL.replace(/\/+$/,'').replace(/\/rest\/v1$/i,'');
+  const sb=window.supabase.createClient(PROJECT_URL,SUPABASE_KEY);
   const $$=id=>document.getElementById(id);
   const L=(en,ja)=>currentLang==='ja'?ja:en;
   let user=null,restoring=false,saveTimer=null,rowsCache=[];
@@ -2548,6 +2840,7 @@ updateUI();updateStats();
   function friendly(m){
     if(/invalid login/i.test(m))return L('Wrong username or password','ユーザー名かパスワードが違います');
     if(/already registered/i.test(m))return L('That username is taken','そのユーザー名は使われています');
+    if(/invalid path specified/i.test(m))return L('Supabase URL must be the project root, ending in .supabase.co (remove /rest/v1).','Supabase URLはプロジェクトのルートURLにしてください（/rest/v1を削除）。');
     return m;
   }
   async function submit(mode){
@@ -2556,12 +2849,14 @@ updateUI();updateStats();
     if(p.length<8){msg.textContent=L('Password: at least 8 characters','パスワードは8文字以上');return;}
     msg.textContent='…';
     const email=u.toLowerCase()+'@'+USER_DOMAIN;
-    const res=mode==='up'
-      ?await sb.auth.signUp({email:email,password:p,options:{data:{username:u}}})
-      :await sb.auth.signInWithPassword({email:email,password:p});
-    if(res.error){msg.textContent=friendly(res.error.message);return;}
-    if(mode==='up'&&!res.data.session){msg.textContent='Email confirmation is still ON in Supabase (Auth → Providers → Email). Turn it off.';return;}
-    closeModal();
+    try{
+      const res=mode==='up'
+        ?await sb.auth.signUp({email:email,password:p,options:{data:{username:u}}})
+        :await sb.auth.signInWithPassword({email:email,password:p});
+      if(res.error){msg.textContent=friendly(res.error.message);return;}
+      if(mode==='up'&&!res.data.session){msg.textContent='Email confirmation is still ON in Supabase (Auth → Providers → Email). Turn it off.';return;}
+      closeModal();
+    }catch(err){msg.textContent=friendly(err&&err.message?err.message:String(err));}
   }
 
   // ── auth state ──
@@ -2575,61 +2870,57 @@ updateUI();updateStats();
   async function onLogin(){
     await loadSessions();
     await pullAndRestore();
+    updateStats();
     clearInterval(saveTimer);
     saveTimer=setInterval(()=>{if(!document.hidden)push();},SAVE_EVERY);
     showToast(L('Signed in ☁','ログインしました ☁'));
   }
   function onLogout(){
     clearInterval(saveTimer);saveTimer=null;rowsCache=[];
-    const el=$$('fk-range');if(el)el.remove();
+    sessions=localSessionRows.length;
+    totalFocusSecs=localSessionRows.reduce((sum,x)=>sum+(Number(x.focus_minutes)||0)*60,0);
+    updateStats();updateUI();
   }
 
   // ── stats (sessions table) ──
   async function loadSessions(){
     const r=await sb.from('sessions').select('focus_minutes,completed_at').order('completed_at',{ascending:false}).limit(5000);
-    if(r.error){console.warn('Focus Kitty sync:',r.error.message);return;}
-    rowsCache=r.data;
+    if(r.error){console.warn('Focus Kitty sync:',r.error.message);updateStats();return;}
+    rowsCache=r.data||[];
+    // On a brand-new account, move sessions collected before sign-in into the account once.
+    if(rowsCache.length===0&&localSessionRows.length){
+      const imported=await sb.from('sessions').insert(localSessionRows.map(x=>({focus_minutes:x.focus_minutes,completed_at:x.completed_at}))).select('focus_minutes,completed_at');
+      if(!imported.error){rowsCache=imported.data||[];localSessionRows=[];persistLocalSessionRows();}
+      else console.warn('Focus Kitty local history import:',imported.error.message);
+    }
     sessions=rowsCache.length;
     totalFocusSecs=rowsCache.reduce((a,x)=>a+x.focus_minutes*60,0);
     sessionHistory=rowsCache.slice(0,30).map((x,i)=>{
       const d=new Date(x.completed_at);
-      return{num:rowsCache.length-i,
+      return{num:rowsCache.length-i,completedAt:x.completed_at,
         date:d.toLocaleDateString('en-GB',{day:'2-digit',month:'short'}),
         time:d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}),focusMinutes:x.focus_minutes};
     });
-    updateStats();paintRange();
+    updateStats();
   }
-  function paintRange(){
-    let el=$$('fk-range');
-    if(!el){
-      const g=document.querySelector('.stats-grid');if(!g)return;
-      g.insertAdjacentHTML('afterend','<div id="fk-range" style="padding:0 16px 10px;font-size:.52rem;font-weight:600;color:var(--text2);display:flex;justify-content:space-between"></div>');
-      el=$$('fk-range');
-    }
-    const now=new Date();
-    const wk=new Date(now.getFullYear(),now.getMonth(),now.getDate()-((now.getDay()+6)%7)); // Monday
-    const mo=new Date(now.getFullYear(),now.getMonth(),1);
-    let w=0,m=0;
-    rowsCache.forEach(x=>{const d=new Date(x.completed_at);if(d>=mo)m+=x.focus_minutes;if(d>=wk)w+=x.focus_minutes;});
-    const f=n=>{const h=Math.floor(n/60),mm=n%60;return h?h+'h '+mm+'m':mm+'m';};
-    el.innerHTML='<span>'+L('This week','今週')+': '+f(w)+'</span><span>'+L('This month','今月')+': '+f(m)+'</span>';
-  }
-  async function logSession(min){
+  async function logSession(min,completedAt){
     if(!user)return;
-    const r=await sb.from('sessions').insert({focus_minutes:min});
+    const r=await sb.from('sessions').insert({focus_minutes:min,completed_at:completedAt||new Date().toISOString()}).select('focus_minutes,completed_at').single();
     if(r.error){console.warn('Focus Kitty sync:',r.error.message);return;}
-    rowsCache.unshift({focus_minutes:min,completed_at:new Date().toISOString()});paintRange();
+    rowsCache.unshift(r.data||{focus_minutes:min,completed_at:completedAt||new Date().toISOString()});
+    sessions=rowsCache.length;totalFocusSecs=rowsCache.reduce((a,x)=>a+x.focus_minutes*60,0);
+    updateStats();
   }
   async function clearSessions(){
     if(!user)return;
     const r=await sb.from('sessions').delete().eq('user_id',user.id);
     if(r.error){console.warn('Focus Kitty sync:',r.error.message);return;}
-    rowsCache=[];paintRange();
+    rowsCache=[];sessions=0;totalFocusSecs=0;sessionHistory=[];updateStats();
   }
 
   // ── cross-device state (user_state table) ──
   function snapshot(){
-    const s={v:1,lang:currentLang,
+    const s={v:1,lang:currentLang,statsGoalMinutes:weeklyGoalMinutes,
       timer:{isFocus:isFocus,remaining:remaining,running:isRunning,focus:Math.round(FOCUS/60),brk:Math.round(BREAK/60),preset:activePreset},
       audio:{focusUrl:$$('focus-url').value,breakUrl:$$('break-url').value,spotify:$$('sp-url').value}};
     if(bgPlayer&&bgId){
@@ -2657,6 +2948,10 @@ updateUI();updateStats();
   }
   function restore(s,age){
     if(s.lang&&s.lang!==currentLang)toggleLanguage();
+    if(Number(s.statsGoalMinutes)>=60&&Number(s.statsGoalMinutes)<=2400){
+      weeklyGoalMinutes=Number(s.statsGoalMinutes);
+      try{localStorage.setItem('focus-kitty-weekly-goal-minutes',String(weeklyGoalMinutes));}catch(e){}
+    }
     const tm=s.timer;
     if(tm){
       FOCUS=tm.focus*60;BREAK=tm.brk*60;activePreset=tm.preset||'custom';isFocus=!!tm.isFocus;
@@ -2686,7 +2981,7 @@ updateUI();updateStats();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)push();});
   window.addEventListener('pagehide',push);
 
-  window.fkCloud={logSession:logSession,clearSessions:clearSessions,push:push};
+  window.fkCloud={logSession:logSession,clearSessions:clearSessions,push:push,getStatsRows:()=>rowsCache,isSignedIn:()=>!!user};
   paintBtn();
 })();
 </script>
