@@ -352,7 +352,8 @@ body{
   -webkit-backdrop-filter:blur(18px);
   box-shadow:0 8px 30px var(--shadow),inset 0 1px 0 rgba(255,255,255,.55);
   display:flex;align-items:center;justify-content:center;
-  padding:14px 0 12px;
+  height:58px;min-height:58px;
+  padding:0;
   position:relative;overflow:hidden;
 }
 .cat-card::before{
@@ -376,7 +377,7 @@ body{
 }
 @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 
-.cat-svg{display:block}
+.cat-svg{display:block;width:56px;height:49px}
 
 /* tail wag */
 @keyframes tail{0%,100%{transform:rotate(-20deg) translateX(0)}50%{transform:rotate(20deg) translateX(2px)}}
@@ -1832,9 +1833,9 @@ body.layout-arch .goal-fill{border-radius:0;background:linear-gradient(90deg,#00
         <input class="inp" type="text" id="break-url" placeholder="break URL (opt.)" data-i18n-placeholder="breakUrlPlaceholder"/>
         <div class="sl-row" style="margin-top:4px">
           <span class="sl-lbl" data-i18n="volumeShort">Vol</span>
-          <input type="range" class="range" id="yt-vol-r" min="0" max="100" value="70"
+          <input type="range" class="range" id="yt-vol-r" min="0" max="100" value="10"
             oninput="document.getElementById('yt-vol-v').textContent=this.value+'%';updateYtVol(this.value)"/>
-          <span class="rv" id="yt-vol-v">70%</span>
+          <span class="rv" id="yt-vol-v">10%</span>
         </div>
         <button class="btn" style="width:100%;margin-top:8px;font-size:.54rem" onclick="applyYT()" data-i18n="apply">Apply</button>
       </div>
@@ -1860,9 +1861,9 @@ body.layout-arch .goal-fill{border-radius:0;background:linear-gradient(90deg,#00
   <div class="card">
     <div class="alarm-panel">
       <span class="sl-lbl" style="min-width:90px" data-i18n="alarmVolume">Alarm Volume</span>
-      <input type="range" class="range" style="flex:1" id="alarm-vol-r" min="0" max="100" value="80"
+      <input type="range" class="range" style="flex:1" id="alarm-vol-r" min="0" max="100" value="10"
         oninput="document.getElementById('alarm-vol-v').textContent=this.value+'%';alarmVol=this.value/100"/>
-      <span class="rv" id="alarm-vol-v">80%</span>
+      <span class="rv" id="alarm-vol-v">10%</span>
       <button class="btn" style="font-size:.52rem;padding:7px 14px;margin-left:4px" onclick="testAlarm()" data-i18n="testAlarm">Test 🔔</button>
     </div>
   </div>
@@ -1974,7 +1975,7 @@ body.layout-arch .goal-fill{border-radius:0;background:linear-gradient(90deg,#00
 <script>
 let FOCUS=50*60,BREAK=10*60;
 let isRunning=false,isFocus=true,remaining=FOCUS;
-let interval=null,sessions=0,ytVol=70,alarmVol=0.8;
+let interval=null,sessions=0,ytVol=10,alarmVol=0.1;
 let autoStart=false;
 try{const _as=localStorage.getItem('fk-autostart');if(_as==='1')autoStart=true;if(_as==='0')autoStart=false;}catch(e){}
 let totalFocusSecs=0,bestStreak=0,currentStreak=0;
@@ -2790,7 +2791,6 @@ updateUI();updateStats();
   const SUPABASE_KEY='sb_publishable_DGwq4X89iXMDPS2xv-hIiQ_uOXtFwdg';   // the public "anon" / "publishable" key, NEVER the service_role key
 
   const USER_DOMAIN='focuskitty.app';    // usernames become username@focuskitty.app behind the scenes
-  const RESUME_MS=24*60*60*1000;         // only restore state saved in the last 24h
   const SAVE_EVERY=15000;                // autosave interval while the tab is visible
 
   if(!window.supabase||SUPABASE_URL.indexOf('PASTE')===0||SUPABASE_KEY.indexOf('PASTE')===0){console.info('Focus Kitty cloud: not configured yet');return;}
@@ -2800,6 +2800,34 @@ updateUI();updateStats();
   const $$=id=>document.getElementById(id);
   const L=(en,ja)=>currentLang==='ja'?ja:en;
   let user=null,restoring=false,saveTimer=null,rowsCache=[];
+  let resumeDay=null,dayResetTimer=null;
+
+  // Daily setup is valid only for the local calendar day on which it was saved.
+  function localDayKey(date=new Date()) {
+    return [date.getFullYear(),String(date.getMonth()+1).padStart(2,'0'),String(date.getDate()).padStart(2,'0')].join('-');
+  }
+  function resetDailyResumeState() {
+    resumeDay=localDayKey();
+    setSessionDurations(50,10,'deep');  // return the timer to Focus Kitty's default 50/10 setup
+    if($$('bg-url'))$$('bg-url').value='';
+    window.__fkBgStart=0;
+    clearBg();
+  }
+  function ensureCurrentDay() {
+    const today=localDayKey();
+    if(resumeDay&&resumeDay!==today){resetDailyResumeState();return true;}
+    if(!resumeDay)resumeDay=today;
+    return false;
+  }
+  function scheduleDailyReset() {
+    clearTimeout(dayResetTimer);
+    const now=new Date();
+    const midnight=new Date(now.getFullYear(),now.getMonth(),now.getDate()+1);
+    dayResetTimer=setTimeout(()=>{
+      if(ensureCurrentDay())push();
+      scheduleDailyReset();
+    },Math.max(1000,midnight.getTime()-now.getTime()+50));
+  }
 
   // ── login UI (built from JS so index.html needs no extra markup) ──
   const css=document.createElement('style');
@@ -2920,7 +2948,7 @@ updateUI();updateStats();
 
   // ── cross-device state (user_state table) ──
   function snapshot(){
-    const s={v:1,lang:currentLang,statsGoalMinutes:weeklyGoalMinutes,
+    const s={v:2,resumeDay:resumeDay||localDayKey(),lang:currentLang,statsGoalMinutes:weeklyGoalMinutes,
       timer:{isFocus:isFocus,remaining:remaining,running:isRunning,focus:Math.round(FOCUS/60),brk:Math.round(BREAK/60),preset:activePreset},
       audio:{focusUrl:$$('focus-url').value,breakUrl:$$('break-url').value,spotify:$$('sp-url').value}};
     if(bgPlayer&&bgId){
@@ -2934,25 +2962,32 @@ updateUI();updateStats();
   }
   async function push(){
     if(!user||restoring)return;
+    ensureCurrentDay();
     const r=await sb.from('user_state').upsert({user_id:user.id,state:snapshot()});
     if(r.error)console.warn('Focus Kitty sync:',r.error.message);
   }
   async function pullAndRestore(){
     const r=await sb.from('user_state').select('state,updated_at').eq('user_id',user.id).maybeSingle();
     if(r.error||!r.data)return;
-    const age=Date.now()-new Date(r.data.updated_at).getTime();
-    if(age>RESUME_MS)return;                       // older than 24h → start fresh
+    const age=Math.max(0,Date.now()-new Date(r.data.updated_at).getTime());
+    const savedState=r.data.state||{};
+    // v1 rows have no resumeDay, so use their last-updated local date as a migration fallback.
+    const savedDay=savedState.resumeDay||localDayKey(new Date(r.data.updated_at));
+    const dailyStateValid=savedDay===localDayKey();
+    resumeDay=localDayKey();
     restoring=true;
-    try{restore(r.data.state||{},age);}catch(e){console.warn('Focus Kitty restore:',e);}
+    try{restore(savedState,age,dailyStateValid);}catch(e){console.warn('Focus Kitty restore:',e);}
     restoring=false;
+    if(!dailyStateValid)await push(); // overwrite expired timer/background with today's fresh defaults
+    scheduleDailyReset();
   }
-  function restore(s,age){
+  function restore(s,age,dailyStateValid=true){
     if(s.lang&&s.lang!==currentLang)toggleLanguage();
     if(Number(s.statsGoalMinutes)>=60&&Number(s.statsGoalMinutes)<=2400){
       weeklyGoalMinutes=Number(s.statsGoalMinutes);
       try{localStorage.setItem('focus-kitty-weekly-goal-minutes',String(weeklyGoalMinutes));}catch(e){}
     }
-    const tm=s.timer;
+    const tm=dailyStateValid?s.timer:null;
     if(tm){
       FOCUS=tm.focus*60;BREAK=tm.brk*60;activePreset=tm.preset||'custom';isFocus=!!tm.isFocus;
       let rem=tm.remaining-(tm.running?Math.floor(age/1000):0);   // time passed while it was running elsewhere
@@ -2971,14 +3006,14 @@ updateUI();updateStats();
       if(a.focusUrl||a.breakUrl){$$('focus-url').value=a.focusUrl||'';$$('break-url').value=a.breakUrl||'';applyYT();}
       if(a.spotify){$$('sp-url').value=a.spotify;applySpotify();}
     }
-    const bg=s.bg;
+    const bg=dailyStateValid?s.bg:null;
     if(bg&&bg.videoId){
       $$('bg-url').value=(bg.live?'https://www.youtube.com/live/':'https://www.youtube.com/watch?v=')+bg.videoId;
       window.__fkBgStart=bg.live?0:(bg.time||0);   // read by buildBgPlayer → YouTube "start" param
       applyBg();
     }
   }
-  document.addEventListener('visibilitychange',()=>{if(document.hidden)push();});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden)push();else{if(ensureCurrentDay())push();scheduleDailyReset();}});
   window.addEventListener('pagehide',push);
 
   window.fkCloud={logSession:logSession,clearSessions:clearSessions,push:push,getStatsRows:()=>rowsCache,isSignedIn:()=>!!user};
