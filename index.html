@@ -1816,6 +1816,16 @@ body.layout-arch .goal-fill{border-radius:0;background:linear-gradient(90deg,#00
           oninput="updateBgVol(this.value)"/>
         <span class="rv" id="bgvol-v">0%</span>
       </div>
+      <div class="sl-row">
+        <span class="sl-lbl" data-i18n="quality">Quality</span>
+        <select class="inp" id="bg-quality" onchange="setBgQuality(this.value)" aria-label="Background video quality">
+          <option value="auto" data-i18n="qualityAuto">Auto</option>
+          <option value="1080p">1080p</option>
+          <option value="720p">720p</option>
+          <option value="480p">480p</option>
+          <option value="360p">360p</option>
+        </select>
+      </div>
       <div class="vid-transport">
         <button type="button" class="btn-transport" id="btn-bg-play" onclick="toggleBgPlayback()" disabled>▶ Play video</button>
       </div>
@@ -2017,7 +2027,7 @@ const I18N={
     statusReady:'Ready — configure audio below',statusPaused:'Paused',statusFocusing:'Focusing — stay locked in 🎯',statusOnBreak:'On break — rest up ☕',
     readyFocus:'Ready for focus',readyBreak:'Ready for break',sessionLength:'Session Length',chooseSession:'Choose a focus cycle',
     classic:'Classic',deepWork:'Deep Work',ultradian:'Ultradian',custom:'Custom',focusBreakCaption:'focus / break',focusMinutes:'Focus (minutes)',breakMinutes:'Break (minutes)',applyCustom:'Apply custom times',
-    backgroundVideo:'Background Video',audio:'Audio',youtubeSound:'YouTube Sound',spotify:'Spotify',alarm:'Alarm',alarmVolume:'Alarm Volume',testAlarm:'Test 🔔',
+    backgroundVideo:'Background Video',quality:'Quality',qualityAuto:'Auto',audio:'Audio',youtubeSound:'YouTube Sound',spotify:'Spotify',alarm:'Alarm',alarmVolume:'Alarm Volume',testAlarm:'Test 🔔',
     statsHistory:'Stats & History',sessions:'Sessions',focusTime:'Focus Time',bestStreak:'Best Streak',history:'History',clear:'Clear',emptyHistory:'No sessions yet — start focusing! 🐱',
     timerTab:'◷ Timer',statsTab:'▥ Stats',statsEyebrow:'YOUR FOCUS, IN PERSPECTIVE',statsTitle:'Focus dashboard',statsIntro:'See what you have built, one focused session at a time.',
     thisMonth:'This month',statsMonthTime:'Focused time',statsMonthSessions:'Sessions',statsActiveDays:'Active days',statsBestDay:'Best day',completedSessions:'focus sessions',daysWithFocus:'days with at least one session',
@@ -2045,7 +2055,7 @@ const I18N={
     statusReady:'準備完了 — 下で音声を設定',statusPaused:'一時停止中',statusFocusing:'集中中 — その調子 🎯',statusOnBreak:'休憩中 — ゆっくり休もう ☕',
     readyFocus:'集中の準備完了',readyBreak:'休憩の準備完了',sessionLength:'セッション時間',chooseSession:'集中サイクルを選択',
     classic:'クラシック',deepWork:'ディープワーク',ultradian:'ウルトラディアン',custom:'カスタム',focusBreakCaption:'集中 / 休憩',focusMinutes:'集中時間（分）',breakMinutes:'休憩時間（分）',applyCustom:'時間を適用',
-    backgroundVideo:'背景動画',audio:'音声',youtubeSound:'YouTube 音声',spotify:'Spotify',alarm:'アラーム',alarmVolume:'アラーム音量',testAlarm:'テスト 🔔',
+    backgroundVideo:'背景動画',quality:'画質',qualityAuto:'自動',audio:'音声',youtubeSound:'YouTube 音声',spotify:'Spotify',alarm:'アラーム',alarmVolume:'アラーム音量',testAlarm:'テスト 🔔',
     statsHistory:'統計と履歴',sessions:'セッション数',focusTime:'集中時間',bestStreak:'最長連続記録',history:'履歴',clear:'クリア',emptyHistory:'まだセッションがありません。集中を始めましょう！ 🐱',
     timerTab:'◷ タイマー',statsTab:'▥ 統計',statsEyebrow:'集中の記録',statsTitle:'フォーカスダッシュボード',statsIntro:'一つひとつの集中セッションを振り返りましょう。',
     thisMonth:'今月',statsMonthTime:'今月の集中時間',statsMonthSessions:'セッション数',statsActiveDays:'集中した日',statsBestDay:'最も集中した日',completedSessions:'集中セッション',daysWithFocus:'1回以上集中した日',
@@ -2177,6 +2187,51 @@ function applyBg(){
   ensureYtMount();
   if(ytReady)buildBgPlayer();else pendingBgPlay=true;
 }
+// ── BACKGROUND VIDEO QUALITY ──
+// YouTube ignores most quality hints on embeds, but it picks "Auto" quality from the
+// iframe's real pixel size. So each preset renders the iframe at that resolution and
+// scales it (CSS transform) to cover the screen, plus a best-effort setPlaybackQuality().
+const BG_QUALITY={
+  auto:null,
+  '1080p':{w:1920,h:1080,q:'hd1080'},
+  '720p':{w:1280,h:720,q:'hd720'},
+  '480p':{w:854,h:480,q:'large'},
+  '360p':{w:640,h:360,q:'medium'}
+};
+let bgQuality='1080p';
+try{const _q=localStorage.getItem('fk-bg-quality');if(_q&&Object.prototype.hasOwnProperty.call(BG_QUALITY,_q))bgQuality=_q;}catch(e){}
+function applyBgQuality(){
+  const sel=$('bg-quality');if(sel&&sel.value!==bgQuality)sel.value=bgQuality;
+  const wrap=$('bg-wrap');if(!wrap)return;
+  const ifr=wrap.querySelector('iframe');if(!ifr)return;
+  const cfg=BG_QUALITY[bgQuality];
+  if(!cfg){   // Auto: back to the stylesheet's cover-sizing
+    ['width','height','min-width','min-height','transform','top','left'].forEach(k=>ifr.style.removeProperty(k));
+    return;
+  }
+  const scale=Math.max(wrap.clientWidth/cfg.w,wrap.clientHeight/cfg.h);
+  ifr.style.setProperty('min-width','0');
+  ifr.style.setProperty('min-height','0');
+  ifr.style.setProperty('width',cfg.w+'px');
+  ifr.style.setProperty('height',cfg.h+'px');
+  ifr.style.setProperty('top','50%');
+  ifr.style.setProperty('left','50%');
+  ifr.style.setProperty('transform','translate(-50%,-50%) scale('+scale+')');
+  if(bgPlayer){
+    try{bgPlayer.setPlaybackQuality(cfg.q);}catch(e){}
+    try{bgPlayer.setPlaybackQualityRange&&bgPlayer.setPlaybackQualityRange(cfg.q,cfg.q);}catch(e){}
+  }
+}
+function setBgQuality(key){
+  if(!Object.prototype.hasOwnProperty.call(BG_QUALITY,key))key='auto';
+  bgQuality=key;
+  try{localStorage.setItem('fk-bg-quality',key);}catch(e){}
+  applyBgQuality();
+  showToast((currentLang==='ja'?'画質: ':'Quality: ')+(key==='auto'?t('qualityAuto'):key));
+}
+window.addEventListener('resize',applyBgQuality);
+document.addEventListener('DOMContentLoaded',()=>{const sel=$('bg-quality');if(sel)sel.value=bgQuality;});
+
 function buildBgPlayer(){
   if(!bgId)return;
   const vars={autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,
@@ -2190,6 +2245,7 @@ function buildBgPlayer(){
       e.target.mute();
       if(bgVolume>0){e.target.unMute();e.target.setVolume(bgVolume);}
       e.target.playVideo();
+      applyBgQuality();
       if(bgPlaylist)pickRandomFromPlaylist(e.target);
       $('bg-wrap').classList.add('has-yt-bg');
       $('video-tl').style.display='block';
@@ -2200,7 +2256,7 @@ function buildBgPlayer(){
     },
     onStateChange:e=>{
       if(e.data===YT.PlayerState.PAUSED)bgUserPaused=true;
-      if(e.data===YT.PlayerState.PLAYING){bgUserPaused=false;bgErrCount=0;}
+      if(e.data===YT.PlayerState.PLAYING){bgUserPaused=false;bgErrCount=0;applyBgQuality();}
       if(e.data===0&&!bgUserPaused)try{bgPlayer.playVideo();}catch(x){}
       syncBgPlayButton();
     },
@@ -2213,6 +2269,7 @@ function buildBgPlayer(){
   }};
   if(!bgPlaylist)cfg.videoId=bgId;
   bgPlayer=new YT.Player('yt-bg-el',cfg);
+  applyBgQuality();
 }
 
 // ── Random James Scholz stream (channel UCYCO3Kifwg56zhus3XXiAVg) ──
