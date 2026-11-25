@@ -289,9 +289,11 @@ body{
 }
 #bg-wrap iframe{
   position:absolute;top:50%;left:50%;
-  width:177.78vh;min-width:100vw;
-  height:100vh;min-height:56.25vw;
-  transform:translate(-50%,-50%);border:none;pointer-events:none;
+  /* JavaScript sizes this 16:9 player to cover the live viewport on any display. */
+  width:177.78vh;height:100vh;
+  min-width:0;min-height:0;max-width:none;max-height:none;
+  transform:translate(-50%,-50%);transform-origin:center center;
+  display:block;border:none;pointer-events:none;
 }
 .bg-dim{position:fixed;inset:0;z-index:1;background:rgba(var(--dim-color),0.82);transition:background .4s;pointer-events:none}
 
@@ -2187,10 +2189,12 @@ function applyBg(){
   ensureYtMount();
   if(ytReady)buildBgPlayer();else pendingBgPlay=true;
 }
-// ── BACKGROUND VIDEO QUALITY ──
-// YouTube ignores most quality hints on embeds, but it picks "Auto" quality from the
-// iframe's real pixel size. So each preset renders the iframe at that resolution and
-// scales it (CSS transform) to cover the screen, plus a best-effort setPlaybackQuality().
+// ── RESPONSIVE BACKGROUND VIDEO / QUALITY ──
+// YouTube's source video remains 16:9. We measure the actual visible viewport and
+// enlarge the player just enough to cover it, preserving the video ratio (no stretching).
+// On non-16:9 screens this intentionally crops a small amount from the longer axis,
+// rather than leaving empty bars around the background.
+const BG_VIDEO_RATIO=16/9;
 const BG_QUALITY={
   auto:null,
   '1080p':{w:1920,h:1080,q:'hd1080'},
@@ -2199,28 +2203,66 @@ const BG_QUALITY={
   '360p':{w:640,h:360,q:'medium'}
 };
 let bgQuality='1080p';
+let bgFitFrame=0;
+let bgWrapResizeObserver=null;
 try{const _q=localStorage.getItem('fk-bg-quality');if(_q&&Object.prototype.hasOwnProperty.call(BG_QUALITY,_q))bgQuality=_q;}catch(e){}
 function applyBgQuality(){
   const sel=$('bg-quality');if(sel&&sel.value!==bgQuality)sel.value=bgQuality;
   const wrap=$('bg-wrap');if(!wrap)return;
   const ifr=wrap.querySelector('iframe');if(!ifr)return;
+
+  // Use the real rendered container size instead of assuming a 16:9 browser window.
+  const rect=wrap.getBoundingClientRect();
+  const viewportW=Math.max(1,Math.round(rect.width||window.innerWidth||1));
+  const viewportH=Math.max(1,Math.round(rect.height||window.innerHeight||1));
+  const viewportRatio=viewportW/viewportH;
+  wrap.dataset.aspectMode=viewportRatio>BG_VIDEO_RATIO+0.015?'wide':
+    viewportRatio<BG_VIDEO_RATIO-0.015?'tall':'standard';
+  wrap.style.setProperty('--bg-viewport-ratio',viewportRatio.toFixed(4));
+
   const cfg=BG_QUALITY[bgQuality];
-  if(!cfg){   // Auto: back to the stylesheet's cover-sizing
-    ['width','height','min-width','min-height','transform','top','left'].forEach(k=>ifr.style.removeProperty(k));
-    return;
+  let playerW,playerH,transform;
+  if(cfg){
+    // Fixed quality presets keep their native pixel dimensions, then scale to cover.
+    playerW=cfg.w;
+    playerH=cfg.h;
+    const scale=Math.max(viewportW/playerW,viewportH/playerH);
+    transform='translate(-50%,-50%) scale('+scale+')';
+  }else{
+    // Auto uses the actual cover dimensions so YouTube can choose quality for this screen.
+    playerW=Math.max(viewportW,viewportH*BG_VIDEO_RATIO);
+    playerH=playerW/BG_VIDEO_RATIO;
+    transform='translate(-50%,-50%)';
   }
-  const scale=Math.max(wrap.clientWidth/cfg.w,wrap.clientHeight/cfg.h);
-  ifr.style.setProperty('min-width','0');
-  ifr.style.setProperty('min-height','0');
-  ifr.style.setProperty('width',cfg.w+'px');
-  ifr.style.setProperty('height',cfg.h+'px');
+
+  ifr.style.setProperty('position','absolute');
   ifr.style.setProperty('top','50%');
   ifr.style.setProperty('left','50%');
-  ifr.style.setProperty('transform','translate(-50%,-50%) scale('+scale+')');
-  if(bgPlayer){
+  ifr.style.setProperty('width',playerW+'px');
+  ifr.style.setProperty('height',playerH+'px');
+  ifr.style.setProperty('min-width','0');
+  ifr.style.setProperty('min-height','0');
+  ifr.style.setProperty('max-width','none');
+  ifr.style.setProperty('max-height','none');
+  ifr.style.setProperty('transform-origin','center center');
+  ifr.style.setProperty('transform',transform);
+
+  if(cfg&&bgPlayer){
     try{bgPlayer.setPlaybackQuality(cfg.q);}catch(e){}
     try{bgPlayer.setPlaybackQualityRange&&bgPlayer.setPlaybackQualityRange(cfg.q,cfg.q);}catch(e){}
   }
+}
+function scheduleBgFit(){
+  if(bgFitFrame)return;
+  bgFitFrame=requestAnimationFrame(()=>{bgFitFrame=0;applyBgQuality();});
+}
+function observeBgViewport(){
+  const wrap=$('bg-wrap');
+  if(wrap&&'ResizeObserver' in window&&!bgWrapResizeObserver){
+    bgWrapResizeObserver=new ResizeObserver(scheduleBgFit);
+    bgWrapResizeObserver.observe(wrap);
+  }
+  scheduleBgFit();
 }
 function setBgQuality(key){
   if(!Object.prototype.hasOwnProperty.call(BG_QUALITY,key))key='auto';
@@ -2229,8 +2271,20 @@ function setBgQuality(key){
   applyBgQuality();
   showToast((currentLang==='ja'?'画質: ':'Quality: ')+(key==='auto'?t('qualityAuto'):key));
 }
-window.addEventListener('resize',applyBgQuality);
-document.addEventListener('DOMContentLoaded',()=>{const sel=$('bg-quality');if(sel)sel.value=bgQuality;});
+
+// Safari on macOS can change its visual viewport independently of a traditional resize.
+window.addEventListener('resize',scheduleBgFit,{passive:true});
+window.addEventListener('orientationchange',scheduleBgFit,{passive:true});
+window.addEventListener('pageshow',scheduleBgFit);
+if(window.visualViewport)window.visualViewport.addEventListener('resize',scheduleBgFit,{passive:true});
+if(screen.orientation&&screen.orientation.addEventListener){
+  screen.orientation.addEventListener('change',scheduleBgFit);
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  const sel=$('bg-quality');if(sel)sel.value=bgQuality;
+  observeBgViewport();
+});
+if(document.readyState!=='loading')observeBgViewport();
 
 function buildBgPlayer(){
   if(!bgId)return;
