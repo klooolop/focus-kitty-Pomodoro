@@ -283,13 +283,27 @@ body{
 }
 #bg-wrap .eng-backdrop{opacity:1;transition:opacity .65s ease}
 #bg-wrap.has-yt-bg .eng-backdrop{opacity:.14}
+#bg-wrap.blur-failed .eng-backdrop{opacity:.72}
+#yt-bg-blur-wrap{transition:opacity .3s ease}
+#bg-wrap.blur-failed #yt-bg-blur-wrap{opacity:0}
 
-#yt-bg-el{
-  position:absolute;inset:0;z-index:1;width:100%;height:100%;
+/* The blurred duplicate fills the entire viewport behind the sharp video. */
+#yt-bg-blur-wrap{
+  position:absolute;inset:-30px;z-index:1;overflow:hidden;
+  background:#100b08;pointer-events:none;
+  opacity:0;transform:scale(1.035);transform-origin:center center;
+  filter:blur(25px) brightness(.62) saturate(1.12);
 }
+#bg-wrap.needs-bg-blur #yt-bg-blur-wrap{opacity:.92}
+#bg-wrap.blur-failed.needs-bg-blur #yt-bg-blur-wrap{opacity:0}
+#yt-bg-blur-el{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+#yt-bg-main-wrap{
+  position:absolute;inset:0;z-index:2;width:100%;height:100%;
+  overflow:hidden;pointer-events:none;
+}
+#yt-bg-el{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 #bg-wrap iframe{
   position:absolute;top:50%;left:50%;
-  /* JavaScript sizes this 16:9 player to cover the live viewport on any display. */
   width:177.78vh;height:100vh;
   min-width:0;min-height:0;max-width:none;max-height:none;
   transform:translate(-50%,-50%);transform-origin:center center;
@@ -1992,7 +2006,8 @@ let autoStart=false;
 try{const _as=localStorage.getItem('fk-autostart');if(_as==='1')autoStart=true;if(_as==='0')autoStart=false;}catch(e){}
 let totalFocusSecs=0,bestStreak=0,currentStreak=0;
 let sessionHistory=[];
-let bgPlayer=null,pFocus=null,pBreak=null;
+let bgPlayer=null,pFocus=null,pBreak=null,bgBlurPlayer=null;
+let bgBlurVideoId='';
 let ytReady=false,bgId='',focusId='',breakId='';
 let pendingBgPlay=false,pendingFP=false,pendingBP=false;
 let bgPlaylist='',bgListIdx=0,bgErrCount=0;
@@ -2172,8 +2187,15 @@ function extractId(url){
 }
 
 function ensureYtMount(){
-  const w=$('bg-wrap');let el=$('yt-bg-el');
-  if(!el){el=document.createElement('div');el.id='yt-bg-el';w.appendChild(el);}
+  const w=$('bg-wrap');
+  let blurWrap=$('yt-bg-blur-wrap');
+  if(!blurWrap){blurWrap=document.createElement('div');blurWrap.id='yt-bg-blur-wrap';w.appendChild(blurWrap);}
+  let blur=$('yt-bg-blur-el');
+  if(!blur){blur=document.createElement('div');blur.id='yt-bg-blur-el';blurWrap.appendChild(blur);}
+  let mainWrap=$('yt-bg-main-wrap');
+  if(!mainWrap){mainWrap=document.createElement('div');mainWrap.id='yt-bg-main-wrap';w.appendChild(mainWrap);}
+  let el=$('yt-bg-el');
+  if(!el){el=document.createElement('div');el.id='yt-bg-el';mainWrap.appendChild(el);}
   return el;
 }
 
@@ -2192,8 +2214,8 @@ function applyBg(){
 // ── RESPONSIVE BACKGROUND VIDEO / QUALITY ──
 // YouTube's source video remains 16:9. We measure the actual visible viewport and
 // enlarge the player just enough to cover it, preserving the video ratio (no stretching).
-// On non-16:9 screens this intentionally crops a small amount from the longer axis,
-// rather than leaving empty bars around the background.
+// The foreground uses contain to show the entire source frame. A muted duplicate
+// uses cover plus blur to fill the leftover space behind it on any display ratio.
 const BG_VIDEO_RATIO=16/9;
 const BG_QUALITY={
   auto:null,
@@ -2206,35 +2228,23 @@ let bgQuality='1080p';
 let bgFitFrame=0;
 let bgWrapResizeObserver=null;
 try{const _q=localStorage.getItem('fk-bg-quality');if(_q&&Object.prototype.hasOwnProperty.call(BG_QUALITY,_q))bgQuality=_q;}catch(e){}
-function applyBgQuality(){
-  const sel=$('bg-quality');if(sel&&sel.value!==bgQuality)sel.value=bgQuality;
-  const wrap=$('bg-wrap');if(!wrap)return;
-  const ifr=wrap.querySelector('iframe');if(!ifr)return;
-
-  // Use the real rendered container size instead of assuming a 16:9 browser window.
-  const rect=wrap.getBoundingClientRect();
-  const viewportW=Math.max(1,Math.round(rect.width||window.innerWidth||1));
-  const viewportH=Math.max(1,Math.round(rect.height||window.innerHeight||1));
-  const viewportRatio=viewportW/viewportH;
-  wrap.dataset.aspectMode=viewportRatio>BG_VIDEO_RATIO+0.015?'wide':
-    viewportRatio<BG_VIDEO_RATIO-0.015?'tall':'standard';
-  wrap.style.setProperty('--bg-viewport-ratio',viewportRatio.toFixed(4));
-
+function sizeBgIframe(ifr,host,fit){
+  if(!ifr||!host)return;
+  const rect=host.getBoundingClientRect();
+  const w=Math.max(1,rect.width||window.innerWidth||1);
+  const h=Math.max(1,rect.height||window.innerHeight||1);
   const cfg=BG_QUALITY[bgQuality];
   let playerW,playerH,transform;
   if(cfg){
-    // Fixed quality presets keep their native pixel dimensions, then scale to cover.
-    playerW=cfg.w;
-    playerH=cfg.h;
-    const scale=Math.max(viewportW/playerW,viewportH/playerH);
+    playerW=cfg.w;playerH=cfg.h;
+    const scale=fit==='contain'?Math.min(w/playerW,h/playerH):Math.max(w/playerW,h/playerH);
     transform='translate(-50%,-50%) scale('+scale+')';
   }else{
-    // Auto uses the actual cover dimensions so YouTube can choose quality for this screen.
-    playerW=Math.max(viewportW,viewportH*BG_VIDEO_RATIO);
-    playerH=playerW/BG_VIDEO_RATIO;
+    // Auto sizes the iframe to the exact 16:9 dimensions needed for contain/cover.
+    const scale=fit==='contain'?Math.min(w/16,h/9):Math.max(w/16,h/9);
+    playerW=16*scale;playerH=9*scale;
     transform='translate(-50%,-50%)';
   }
-
   ifr.style.setProperty('position','absolute');
   ifr.style.setProperty('top','50%');
   ifr.style.setProperty('left','50%');
@@ -2246,24 +2256,44 @@ function applyBgQuality(){
   ifr.style.setProperty('max-height','none');
   ifr.style.setProperty('transform-origin','center center');
   ifr.style.setProperty('transform',transform);
+}
+function applyBgQuality(){
+  const sel=$('bg-quality');if(sel&&sel.value!==bgQuality)sel.value=bgQuality;
+  const wrap=$('bg-wrap');if(!wrap)return;
+  const rect=wrap.getBoundingClientRect();
+  const viewportW=Math.max(1,Math.round(rect.width||window.innerWidth||1));
+  const viewportH=Math.max(1,Math.round(rect.height||window.innerHeight||1));
+  const viewportRatio=viewportW/viewportH;
+  wrap.dataset.aspectMode=viewportRatio>BG_VIDEO_RATIO+0.015?'wide':
+    viewportRatio<BG_VIDEO_RATIO-0.015?'tall':'standard';
+  wrap.style.setProperty('--bg-viewport-ratio',viewportRatio.toFixed(4));
+  const needsBlur=Math.abs(viewportRatio-BG_VIDEO_RATIO)>0.015;
+  wrap.classList.toggle('needs-bg-blur',needsBlur);
 
+  // Avoid decoding a second copy on a 16:9 viewport, where no fill is needed.
+  const mainFrame=$('yt-bg-el');
+  const blurFrame=$('yt-bg-blur-el');
+  if(mainFrame&&mainFrame.tagName==='IFRAME')sizeBgIframe(mainFrame,$('yt-bg-main-wrap'),'contain');
+  if(blurFrame&&blurFrame.tagName==='IFRAME')sizeBgIframe(blurFrame,$('yt-bg-blur-wrap'),'cover');
+  if(needsBlur&&bgPlayer){
+    if(!bgBlurPlayer&&ytReady)buildBgBlurPlayer();
+    else if(bgBlurPlayer)syncBgBlurPlayer(false);
+  }else if(!needsBlur&&bgBlurPlayer){
+    try{bgBlurPlayer.pauseVideo();}catch(e){}
+  }
+
+  const cfg=BG_QUALITY[bgQuality];
   if(cfg&&bgPlayer){
     try{bgPlayer.setPlaybackQuality(cfg.q);}catch(e){}
     try{bgPlayer.setPlaybackQualityRange&&bgPlayer.setPlaybackQualityRange(cfg.q,cfg.q);}catch(e){}
   }
-}
-function scheduleBgFit(){
-  if(bgFitFrame)return;
-  bgFitFrame=requestAnimationFrame(()=>{bgFitFrame=0;applyBgQuality();});
-}
-function observeBgViewport(){
-  const wrap=$('bg-wrap');
-  if(wrap&&'ResizeObserver' in window&&!bgWrapResizeObserver){
-    bgWrapResizeObserver=new ResizeObserver(scheduleBgFit);
-    bgWrapResizeObserver.observe(wrap);
+  // The blurred layer needs less detail; keep it at a modest resolution when possible.
+  if(bgBlurPlayer){
+    try{bgBlurPlayer.setPlaybackQuality('large');}catch(e){}
+    try{bgBlurPlayer.setPlaybackQualityRange&&bgBlurPlayer.setPlaybackQualityRange('large','large');}catch(e){}
   }
-  scheduleBgFit();
 }
+
 function setBgQuality(key){
   if(!Object.prototype.hasOwnProperty.call(BG_QUALITY,key))key='auto';
   bgQuality=key;
@@ -2286,6 +2316,63 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 if(document.readyState!=='loading')observeBgViewport();
 
+// A second, muted YouTube player creates the soft-fill effect behind the sharp video.
+// All user controls continue to operate on bgPlayer (the foreground player).
+function buildBgBlurPlayer(){
+  if(!bgPlayer||bgBlurPlayer||!window.YT||!YT.Player)return;
+  const firstVideo=(bgPlayer.getVideoData()||{}).video_id||(!bgPlaylist?bgId:'');
+  bgBlurVideoId=firstVideo||'';
+  const vars={autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,
+    showinfo:0,modestbranding:1,iv_load_policy:3,playsinline:1,
+    origin:(location.origin&&location.origin!=='null')?location.origin:'http://localhost'};
+  if(firstVideo&&!bgIsLive){vars.loop=1;vars.playlist=firstVideo;}
+  const cfg={playerVars:vars,events:{
+    onReady:e=>{
+      try{e.target.mute();e.target.setVolume(0);}catch(x){}
+      syncBgBlurPlayer(true);
+      applyBgQuality();
+    },
+    onStateChange:e=>{
+      try{e.target.mute();e.target.setVolume(0);}catch(x){}
+      if(e.data===YT.PlayerState.PLAYING)syncBgBlurPlayer();
+    },
+    onError:()=>{
+      // If a video disallows a second simultaneous embed, keep the sharp player working.
+      const wrap=$('bg-wrap');if(wrap)wrap.classList.add('blur-failed');
+    }
+  }};
+  if(firstVideo)cfg.videoId=firstVideo;
+  bgBlurPlayer=new YT.Player('yt-bg-blur-el',cfg);
+  applyBgQuality();
+}
+function syncBgBlurPlayer(forceSeek){
+  if(!bgPlayer||!bgBlurPlayer)return;
+  try{
+    const data=bgPlayer.getVideoData()||{};
+    const videoId=data.video_id;
+    if(!videoId)return;
+    const current=Math.max(0,bgPlayer.getCurrentTime()||0);
+    const mainState=bgPlayer.getPlayerState();
+    if(bgBlurVideoId!==videoId){
+      bgBlurVideoId=videoId;
+      bgBlurPlayer.loadVideoById({videoId,startSeconds:current});
+      try{bgBlurPlayer.mute();bgBlurPlayer.setVolume(0);}catch(x){}
+      return;
+    }
+    const blurState=bgBlurPlayer.getPlayerState();
+    const blurTime=bgBlurPlayer.getCurrentTime()||0;
+    if(forceSeek||Math.abs(blurTime-current)>2.25){
+      bgBlurPlayer.seekTo(current,true);
+    }
+    if(mainState===YT.PlayerState.PAUSED){
+      if(blurState!==YT.PlayerState.PAUSED)bgBlurPlayer.pauseVideo();
+    }else if(mainState===YT.PlayerState.PLAYING||mainState===YT.PlayerState.BUFFERING||mainState===YT.PlayerState.CUED){
+      if(blurState!==YT.PlayerState.PLAYING&&blurState!==YT.PlayerState.BUFFERING)bgBlurPlayer.playVideo();
+    }
+    try{bgBlurPlayer.mute();bgBlurPlayer.setVolume(0);}catch(x){}
+  }catch(e){}
+}
+
 function buildBgPlayer(){
   if(!bgId)return;
   const vars={autoplay:1,mute:1,controls:0,disablekb:1,fs:0,rel:0,
@@ -2301,6 +2388,8 @@ function buildBgPlayer(){
       e.target.playVideo();
       applyBgQuality();
       if(bgPlaylist)pickRandomFromPlaylist(e.target);
+      // applyBgQuality() creates the blurred duplicate only when the viewport ratio needs it.
+      $('bg-wrap').classList.remove('blur-failed');
       $('bg-wrap').classList.add('has-yt-bg');
       $('video-tl').style.display='block';
       $('live-badge').classList[bgIsLive?'add':'remove']('show');
@@ -2312,6 +2401,7 @@ function buildBgPlayer(){
       if(e.data===YT.PlayerState.PAUSED)bgUserPaused=true;
       if(e.data===YT.PlayerState.PLAYING){bgUserPaused=false;bgErrCount=0;applyBgQuality();}
       if(e.data===0&&!bgUserPaused)try{bgPlayer.playVideo();}catch(x){}
+      syncBgBlurPlayer();
       syncBgPlayButton();
     },
     onError:e=>{
@@ -2348,11 +2438,19 @@ function pickRandomFromPlaylist(p,tries){
 }
 function clearBg(){
   destroyBg();
-  const yt=$('yt-bg-el');if(yt)yt.remove();
-  $('bg-wrap').classList.remove('has-yt-bg');
+  const mainWrap=$('yt-bg-main-wrap');if(mainWrap)mainWrap.remove();
+  const blurWrap=$('yt-bg-blur-wrap');if(blurWrap)blurWrap.remove();
+  $('bg-wrap').classList.remove('has-yt-bg','blur-failed','needs-bg-blur');
   $('video-tl').style.display='none';stopTl();bgId='';bgPlaylist='';syncBgPlayButton();
 }
-function destroyBg(){stopTl();if(bgPlayer){try{bgPlayer.destroy();}catch(e){}bgPlayer=null;}syncBgPlayButton();}
+function destroyBg(){
+  stopTl();
+  if(bgPlayer){try{bgPlayer.destroy();}catch(e){}bgPlayer=null;}
+  if(bgBlurPlayer){try{bgBlurPlayer.destroy();}catch(e){}bgBlurPlayer=null;}
+  bgBlurVideoId='';
+  const wrap=$('bg-wrap');if(wrap)wrap.classList.remove('blur-failed','needs-bg-blur');
+  syncBgPlayButton();
+}
 
 function tlIntervalMs(){
   if(document.hidden)return 2800;
@@ -2385,7 +2483,7 @@ function updateTl(){
 }
 function seekBg(val){
   if(!bgPlayer)return;
-  try{const dur=bgPlayer.getDuration();if(dur>0)bgPlayer.seekTo(dur*(val/1000),true);}catch(e){}
+  try{const dur=bgPlayer.getDuration();if(dur>0){bgPlayer.seekTo(dur*(val/1000),true);syncBgBlurPlayer(true);}}catch(e){}
 }
 function updateDim(v){
   const style=getComputedStyle(document.body);
